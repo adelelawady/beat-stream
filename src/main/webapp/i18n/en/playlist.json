@@ -1,0 +1,26 @@
+{
+  "beatStreamApp": {
+    "playlist": {
+      "home": {
+        "title": "Playlists",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Playlist",
+        "createOrEditLabel": "Create or edit a Playlist",
+        "notFound": "No Playlists found"
+      },
+      "created": "A new Playlist is created with identifier {{ param }}",
+      "updated": "A Playlist is updated with identifier {{ param }}",
+      "deleted": "A Playlist is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Playlist {{ id }}?"
+      },
+      "detail": {
+        "title": "Playlist"
+      },
+      "id": "Id",
+      "title": "Title",
+      "description": "Description",
+      "track": "Track"
+    }
+  }
+}

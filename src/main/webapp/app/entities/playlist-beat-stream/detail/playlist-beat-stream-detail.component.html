@@ -1,0 +1,47 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (playlist(); as playlistRef) {
+      <div>
+        <h2 data-cy="playlistDetailsHeading"><span jhiTranslate="beatStreamApp.playlist.detail.title">Playlist</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="beatStreamApp.playlist.id">Id</span></dt>
+          <dd>
+            <span>{{ playlistRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.playlist.title">Title</span></dt>
+          <dd>
+            <span>{{ playlistRef.title }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.playlist.description">Description</span></dt>
+          <dd>
+            <span>{{ playlistRef.description }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.playlist.track">Track</span></dt>
+          <dd>
+            @for (track of playlistRef.tracks; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/track-beat-stream', track.id, 'view']">{{ track?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/playlist-beat-stream', playlistRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

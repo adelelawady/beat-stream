@@ -1,0 +1,59 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (album(); as albumRef) {
+      <div>
+        <h2 data-cy="albumDetailsHeading"><span jhiTranslate="beatStreamApp.album.detail.title">Album</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="beatStreamApp.album.id">Id</span></dt>
+          <dd>
+            <span>{{ albumRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.album.title">Title</span></dt>
+          <dd>
+            <span>{{ albumRef.title }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.album.releaseDate">Release Date</span></dt>
+          <dd>
+            <span>{{ albumRef.releaseDate }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.album.coverImageFileId">Cover Image File Id</span></dt>
+          <dd>
+            <span>{{ albumRef.coverImageFileId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.album.artist">Artist</span></dt>
+          <dd>
+            @if (album()!.artist) {
+              <div>
+                <a [routerLink]="['/artist-beat-stream', album()!.artist?.id, 'view']">{{ albumRef.artist?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.album.genre">Genre</span></dt>
+          <dd>
+            @for (genre of albumRef.genres; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/genre-beat-stream', genre.id, 'view']">{{ genre?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/album-beat-stream', albumRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

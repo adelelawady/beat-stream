@@ -1,0 +1,48 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (beatStreamFile(); as beatStreamFileRef) {
+      <div>
+        <h2 data-cy="beatStreamFileDetailsHeading">
+          <span jhiTranslate="beatStreamApp.beatStreamFile.detail.title">Beat Stream File</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="beatStreamApp.beatStreamFile.id">Id</span></dt>
+          <dd>
+            <span>{{ beatStreamFileRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.beatStreamFile.name">Name</span></dt>
+          <dd>
+            <span>{{ beatStreamFileRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.beatStreamFile.size">Size</span></dt>
+          <dd>
+            <span>{{ beatStreamFileRef.size }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.beatStreamFile.bucket">Bucket</span></dt>
+          <dd>
+            <span>{{ beatStreamFileRef.bucket }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.beatStreamFile.type">Type</span></dt>
+          <dd>
+            <span>{{ beatStreamFileRef.type }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/beat-stream-file-beat-stream', beatStreamFileRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

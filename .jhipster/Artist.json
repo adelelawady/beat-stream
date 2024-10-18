@@ -1,0 +1,32 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113834"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "bio",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "coverImageFileId",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Artist",
+  "pagination": "pagination",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

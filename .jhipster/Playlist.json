@@ -1,0 +1,35 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113838"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Playlist",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "track",
+      "relationshipName": "track",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

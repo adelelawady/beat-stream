@@ -1,0 +1,27 @@
+{
+  "beatStreamApp": {
+    "beatStreamFile": {
+      "home": {
+        "title": "Beat Stream Files",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Beat Stream File",
+        "createOrEditLabel": "Create or edit a Beat Stream File",
+        "notFound": "No Beat Stream Files found"
+      },
+      "created": "A new Beat Stream File is created with identifier {{ param }}",
+      "updated": "A Beat Stream File is updated with identifier {{ param }}",
+      "deleted": "A Beat Stream File is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Beat Stream File {{ id }}?"
+      },
+      "detail": {
+        "title": "Beat Stream File"
+      },
+      "id": "Id",
+      "name": "Name",
+      "size": "Size",
+      "bucket": "Bucket",
+      "type": "Type"
+    }
+  }
+}

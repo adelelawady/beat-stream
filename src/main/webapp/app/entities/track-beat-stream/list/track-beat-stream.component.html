@@ -1,0 +1,163 @@
+<div>
+  <h2 id="page-heading" data-cy="TrackHeading">
+    <span jhiTranslate="beatStreamApp.track.home.title">Tracks</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="beatStreamApp.track.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-track-beat-stream"
+        [routerLink]="['/track-beat-stream/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="beatStreamApp.track.home.createLabel">Create a new Track</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (tracks?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="beatStreamApp.track.home.notFound">No Tracks found</span>
+    </div>
+  }
+
+  @if (tracks && tracks.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.id">Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="title">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.title">Title</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="duration">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.duration">Duration</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="liked">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.liked">Liked</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="audioFileId">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.audioFileId">Audio File Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="coverImageFileId">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.coverImageFileId">Cover Image File Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="artist.id">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.artist">Artist</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="album.id">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.track.album">Album</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (track of tracks; track trackId(track)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/track-beat-stream', track.id, 'view']">{{ track.id }}</a>
+              </td>
+              <td>{{ track.title }}</td>
+              <td>{{ track.duration }}</td>
+              <td>{{ track.liked }}</td>
+              <td>{{ track.audioFileId }}</td>
+              <td>{{ track.coverImageFileId }}</td>
+              <td>
+                @if (track.artist) {
+                  <div>
+                    <a [routerLink]="['/artist-beat-stream', track.artist.id, 'view']">{{ track.artist.id }}</a>
+                  </div>
+                }
+              </td>
+              <td>
+                @if (track.album) {
+                  <div>
+                    <a [routerLink]="['/album-beat-stream', track.album.id, 'view']">{{ track.album.id }}</a>
+                  </div>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/track-beat-stream', track.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a [routerLink]="['/track-beat-stream', track.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(track)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+  @if (tracks && tracks.length > 0) {
+    <div>
+      <div class="d-flex justify-content-center">
+        <jhi-item-count [params]="{ page: page, totalItems: totalItems, itemsPerPage: itemsPerPage }"></jhi-item-count>
+      </div>
+
+      <div class="d-flex justify-content-center">
+        <ngb-pagination
+          [collectionSize]="totalItems"
+          [page]="page"
+          [pageSize]="itemsPerPage"
+          [maxSize]="5"
+          [rotate]="true"
+          [boundaryLinks]="true"
+          (pageChange)="navigateToPage($event)"
+        ></ngb-pagination>
+      </div>
+    </div>
+  }
+</div>

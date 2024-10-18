@@ -1,0 +1,118 @@
+<div>
+  <h2 id="page-heading" data-cy="BeatStreamFileHeading">
+    <span jhiTranslate="beatStreamApp.beatStreamFile.home.title">Beat Stream Files</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span jhiTranslate="beatStreamApp.beatStreamFile.home.refreshListLabel">Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-beat-stream-file-beat-stream"
+        [routerLink]="['/beat-stream-file-beat-stream/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span jhiTranslate="beatStreamApp.beatStreamFile.home.createLabel">Create a new Beat Stream File</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (beatStreamFiles?.length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span jhiTranslate="beatStreamApp.beatStreamFile.home.notFound">No Beat Stream Files found</span>
+    </div>
+  }
+
+  @if (beatStreamFiles && beatStreamFiles.length > 0) {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.beatStreamFile.id">Id</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="name">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.beatStreamFile.name">Name</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="size">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.beatStreamFile.size">Size</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="bucket">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.beatStreamFile.bucket">Bucket</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="type">
+              <div class="d-flex">
+                <span jhiTranslate="beatStreamApp.beatStreamFile.type">Type</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (beatStreamFile of beatStreamFiles; track trackId(beatStreamFile)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/beat-stream-file-beat-stream', beatStreamFile.id, 'view']">{{ beatStreamFile.id }}</a>
+              </td>
+              <td>{{ beatStreamFile.name }}</td>
+              <td>{{ beatStreamFile.size }}</td>
+              <td>{{ beatStreamFile.bucket }}</td>
+              <td>{{ beatStreamFile.type }}</td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a
+                    [routerLink]="['/beat-stream-file-beat-stream', beatStreamFile.id, 'view']"
+                    class="btn btn-info btn-sm"
+                    data-cy="entityDetailsButton"
+                  >
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
+                  </a>
+
+                  <a
+                    [routerLink]="['/beat-stream-file-beat-stream', beatStreamFile.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(beatStreamFile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

@@ -1,0 +1,27 @@
+{
+  "beatStreamApp": {
+    "artist": {
+      "home": {
+        "title": "Artists",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Artist جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Artist",
+        "notFound": "لم يتم العثور على Artists"
+      },
+      "created": "Artist جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Artist تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Artist تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Artist {{ id }}؟"
+      },
+      "detail": {
+        "title": "Artist"
+      },
+      "id": "Id",
+      "name": "Name",
+      "bio": "Bio",
+      "coverImageFileId": "Cover Image File Id",
+      "genre": "Genre"
+    }
+  }
+}

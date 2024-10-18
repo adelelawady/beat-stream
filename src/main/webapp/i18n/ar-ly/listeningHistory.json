@@ -1,0 +1,25 @@
+{
+  "beatStreamApp": {
+    "listeningHistory": {
+      "home": {
+        "title": "Listening Histories",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Listening History جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Listening History",
+        "notFound": "لم يتم العثور على Listening Histories"
+      },
+      "created": "Listening History جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Listening History تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Listening History تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Listening History {{ id }}؟"
+      },
+      "detail": {
+        "title": "Listening History"
+      },
+      "id": "Id",
+      "timestamp": "Timestamp",
+      "track": "Track"
+    }
+  }
+}

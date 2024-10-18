@@ -1,0 +1,27 @@
+{
+  "beatStreamApp": {
+    "artist": {
+      "home": {
+        "title": "Artists",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Artist",
+        "createOrEditLabel": "Create or edit a Artist",
+        "notFound": "No Artists found"
+      },
+      "created": "A new Artist is created with identifier {{ param }}",
+      "updated": "A Artist is updated with identifier {{ param }}",
+      "deleted": "A Artist is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Artist {{ id }}?"
+      },
+      "detail": {
+        "title": "Artist"
+      },
+      "id": "Id",
+      "name": "Name",
+      "bio": "Bio",
+      "coverImageFileId": "Cover Image File Id",
+      "genre": "Genre"
+    }
+  }
+}

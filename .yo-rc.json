@@ -16,11 +16,12 @@
     "enableHibernateCache": null,
     "enableSwaggerCodegen": true,
     "enableTranslation": true,
-    "entities": [],
+    "entities": ["Album", "Artist", "BeatStreamFile", "Genre", "ListeningHistory", "Playlist", "Track"],
     "feignClient": null,
     "jhipsterVersion": "8.7.1",
     "jwtSecretKey": "MWZkMmI1Yjk1ZDJmNDVkNjYxYjA5MDQ3Y2E2MTkyMTVkYjVkN2E2ZmRlMDRiNTYzYjBjZGE4YTI3ZWJjZmQxZmVjYzE0ZjkxOThkMjQyM2I1ODdhOTZlODU1OGMwZmRmNmNiODEzNTYxMDVjNDU3NWVkNzJjZmFjNGEzZjAzNjY=",
     "languages": ["en", "ar-ly"],
+    "lastLiquibaseTimestamp": 1729251519000,
     "messageBroker": false,
     "microfrontend": null,
     "microfrontends": [],
@@ -32,10 +33,10 @@
     "serverPort": null,
     "serverSideOptions": ["websocket:spring-websocket", "enableSwaggerCodegen:true"],
     "serviceDiscoveryType": false,
+    "skipDocker": true,
     "syncUserWithIdp": null,
     "testFrameworks": [],
     "websocket": "spring-websocket",
-    "withAdminUi": true,
-    "skipDocker": true
+    "withAdminUi": true
   }
 }

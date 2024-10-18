@@ -1,0 +1,26 @@
+{
+  "beatStreamApp": {
+    "genre": {
+      "home": {
+        "title": "Genres",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Genre جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Genre",
+        "notFound": "لم يتم العثور على Genres"
+      },
+      "created": "Genre جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Genre تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Genre تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Genre {{ id }}؟"
+      },
+      "detail": {
+        "title": "Genre"
+      },
+      "id": "Id",
+      "name": "Name",
+      "artist": "Artist",
+      "album": "Album"
+    }
+  }
+}

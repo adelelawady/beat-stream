@@ -1,0 +1,66 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (track(); as trackRef) {
+      <div>
+        <h2 data-cy="trackDetailsHeading"><span jhiTranslate="beatStreamApp.track.detail.title">Track</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="beatStreamApp.track.id">Id</span></dt>
+          <dd>
+            <span>{{ trackRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.title">Title</span></dt>
+          <dd>
+            <span>{{ trackRef.title }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.duration">Duration</span></dt>
+          <dd>
+            <span>{{ trackRef.duration }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.liked">Liked</span></dt>
+          <dd>
+            <span>{{ trackRef.liked }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.audioFileId">Audio File Id</span></dt>
+          <dd>
+            <span>{{ trackRef.audioFileId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.coverImageFileId">Cover Image File Id</span></dt>
+          <dd>
+            <span>{{ trackRef.coverImageFileId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.artist">Artist</span></dt>
+          <dd>
+            @if (track()!.artist) {
+              <div>
+                <a [routerLink]="['/artist-beat-stream', track()!.artist?.id, 'view']">{{ trackRef.artist?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.track.album">Album</span></dt>
+          <dd>
+            @if (track()!.album) {
+              <div>
+                <a [routerLink]="['/album-beat-stream', track()!.album?.id, 'view']">{{ trackRef.album?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/track-beat-stream', trackRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

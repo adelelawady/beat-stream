@@ -1,0 +1,53 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113839"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "duration",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "liked",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "audioFileId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "coverImageFileId",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Track",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "artist",
+      "relationshipName": "artist",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
+    {
+      "otherEntityName": "album",
+      "relationshipName": "album",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

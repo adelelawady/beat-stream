@@ -1,0 +1,26 @@
+{
+  "beatStreamApp": {
+    "playlist": {
+      "home": {
+        "title": "Playlists",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Playlist جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Playlist",
+        "notFound": "لم يتم العثور على Playlists"
+      },
+      "created": "Playlist جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Playlist تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Playlist تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Playlist {{ id }}؟"
+      },
+      "detail": {
+        "title": "Playlist"
+      },
+      "id": "Id",
+      "title": "Title",
+      "description": "Description",
+      "track": "Track"
+    }
+  }
+}

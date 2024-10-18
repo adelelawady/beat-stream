@@ -1,0 +1,31 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113836"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "Genre",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "artist",
+      "relationshipName": "artist",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

@@ -1,0 +1,25 @@
+{
+  "beatStreamApp": {
+    "listeningHistory": {
+      "home": {
+        "title": "Listening Histories",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Listening History",
+        "createOrEditLabel": "Create or edit a Listening History",
+        "notFound": "No Listening Histories found"
+      },
+      "created": "A new Listening History is created with identifier {{ param }}",
+      "updated": "A Listening History is updated with identifier {{ param }}",
+      "deleted": "A Listening History is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Listening History {{ id }}?"
+      },
+      "detail": {
+        "title": "Listening History"
+      },
+      "id": "Id",
+      "timestamp": "Timestamp",
+      "track": "Track"
+    }
+  }
+}

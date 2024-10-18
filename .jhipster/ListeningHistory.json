@@ -1,0 +1,30 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113837"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "timestamp",
+      "fieldType": "String"
+    }
+  ],
+  "name": "ListeningHistory",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "track",
+      "relationshipName": "track",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

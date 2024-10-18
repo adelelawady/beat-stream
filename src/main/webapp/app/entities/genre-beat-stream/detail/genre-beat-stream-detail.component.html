@@ -1,0 +1,43 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (genre(); as genreRef) {
+      <div>
+        <h2 data-cy="genreDetailsHeading"><span jhiTranslate="beatStreamApp.genre.detail.title">Genre</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="beatStreamApp.genre.id">Id</span></dt>
+          <dd>
+            <span>{{ genreRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.genre.name">Name</span></dt>
+          <dd>
+            <span>{{ genreRef.name }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.genre.artist">Artist</span></dt>
+          <dd>
+            @for (artist of genreRef.artists; track $index; let last = $last) {
+              <span>
+                <a [routerLink]="['/artist-beat-stream', artist.id, 'view']">{{ artist?.id }}</a
+                >{{ last ? '' : ', ' }}
+              </span>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/genre-beat-stream', genreRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

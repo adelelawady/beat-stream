@@ -1,0 +1,45 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113833"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "releaseDate",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "coverImageFileId",
+      "fieldType": "String"
+    }
+  ],
+  "name": "Album",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "artist",
+      "relationshipName": "artist",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityName": "genre",
+      "relationshipName": "genre",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

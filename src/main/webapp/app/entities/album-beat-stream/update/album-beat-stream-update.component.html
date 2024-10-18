@@ -1,0 +1,109 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-album-beat-stream-heading" data-cy="AlbumCreateUpdateHeading" jhiTranslate="beatStreamApp.album.home.createOrEditLabel">
+        Create or edit a Album
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="beatStreamApp.album.id">Id</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let titleRef = editForm.get('title')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_title" jhiTranslate="beatStreamApp.album.title">Title</label>
+          <input type="text" class="form-control" name="title" id="field_title" data-cy="title" formControlName="title" />
+          @if (titleRef.invalid && (titleRef.dirty || titleRef.touched)) {
+            <div>
+              @if (editForm.get('title')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_releaseDate" jhiTranslate="beatStreamApp.album.releaseDate">Release Date</label>
+          <input
+            type="text"
+            class="form-control"
+            name="releaseDate"
+            id="field_releaseDate"
+            data-cy="releaseDate"
+            formControlName="releaseDate"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_coverImageFileId" jhiTranslate="beatStreamApp.album.coverImageFileId"
+            >Cover Image File Id</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="coverImageFileId"
+            id="field_coverImageFileId"
+            data-cy="coverImageFileId"
+            formControlName="coverImageFileId"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_artist" jhiTranslate="beatStreamApp.album.artist">Artist</label>
+          <select
+            class="form-control"
+            id="field_artist"
+            data-cy="artist"
+            name="artist"
+            formControlName="artist"
+            [compareWith]="compareArtistBeatStream"
+          >
+            <option [ngValue]="null"></option>
+            @for (artistOption of artistsSharedCollection; track $index) {
+              <option [ngValue]="artistOption">{{ artistOption.id }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label for="field_genres" jhiTranslate="beatStreamApp.album.genre">Genre</label>
+          <select
+            class="form-control"
+            id="field_genres"
+            data-cy="genre"
+            multiple
+            name="genres"
+            formControlName="genres"
+            [compareWith]="compareGenreBeatStream"
+          >
+            @for (genreOption of genresSharedCollection; track $index) {
+              <option [ngValue]="genreOption">{{ genreOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

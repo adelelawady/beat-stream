@@ -1,0 +1,35 @@
+{
+  "angularJSSuffix": "beatStream",
+  "annotations": {
+    "changelogDate": "20241018113835"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "id",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "size",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "bucket",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "String"
+    }
+  ],
+  "name": "BeatStreamFile",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

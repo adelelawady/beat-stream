@@ -1,0 +1,44 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (listeningHistory(); as listeningHistoryRef) {
+      <div>
+        <h2 data-cy="listeningHistoryDetailsHeading">
+          <span jhiTranslate="beatStreamApp.listeningHistory.detail.title">Listening History</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="beatStreamApp.listeningHistory.id">Id</span></dt>
+          <dd>
+            <span>{{ listeningHistoryRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.listeningHistory.timestamp">Timestamp</span></dt>
+          <dd>
+            <span>{{ listeningHistoryRef.timestamp }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.listeningHistory.track">Track</span></dt>
+          <dd>
+            @if (listeningHistory()!.track) {
+              <div>
+                <a [routerLink]="['/track-beat-stream', listeningHistory()!.track?.id, 'view']">{{ listeningHistoryRef.track?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/listening-history-beat-stream', listeningHistoryRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

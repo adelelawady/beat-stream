@@ -1,0 +1,31 @@
+{
+  "beatStreamApp": {
+    "track": {
+      "home": {
+        "title": "Tracks",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Track جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Track",
+        "notFound": "لم يتم العثور على Tracks"
+      },
+      "created": "Track جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Track تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Track تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Track {{ id }}؟"
+      },
+      "detail": {
+        "title": "Track"
+      },
+      "id": "Id",
+      "title": "Title",
+      "duration": "Duration",
+      "liked": "Liked",
+      "audioFileId": "Audio File Id",
+      "coverImageFileId": "Cover Image File Id",
+      "artist": "Artist",
+      "album": "Album",
+      "playlist": "Playlist"
+    }
+  }
+}

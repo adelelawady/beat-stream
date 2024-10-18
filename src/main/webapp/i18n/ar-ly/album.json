@@ -1,0 +1,28 @@
+{
+  "beatStreamApp": {
+    "album": {
+      "home": {
+        "title": "Albums",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Album جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Album",
+        "notFound": "لم يتم العثور على Albums"
+      },
+      "created": "Album جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Album تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Album تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Album {{ id }}؟"
+      },
+      "detail": {
+        "title": "Album"
+      },
+      "id": "Id",
+      "title": "Title",
+      "releaseDate": "Release Date",
+      "coverImageFileId": "Cover Image File Id",
+      "artist": "Artist",
+      "genre": "Genre"
+    }
+  }
+}

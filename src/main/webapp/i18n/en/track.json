@@ -1,0 +1,31 @@
+{
+  "beatStreamApp": {
+    "track": {
+      "home": {
+        "title": "Tracks",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Track",
+        "createOrEditLabel": "Create or edit a Track",
+        "notFound": "No Tracks found"
+      },
+      "created": "A new Track is created with identifier {{ param }}",
+      "updated": "A Track is updated with identifier {{ param }}",
+      "deleted": "A Track is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Track {{ id }}?"
+      },
+      "detail": {
+        "title": "Track"
+      },
+      "id": "Id",
+      "title": "Title",
+      "duration": "Duration",
+      "liked": "Liked",
+      "audioFileId": "Audio File Id",
+      "coverImageFileId": "Cover Image File Id",
+      "artist": "Artist",
+      "album": "Album",
+      "playlist": "Playlist"
+    }
+  }
+}
