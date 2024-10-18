@@ -17,8 +17,4 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest(classes = { BeatStreamApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
 @EmbeddedMongo
 public @interface IntegrationTest {
-    // 5s is Spring's default https://github.com/spring-projects/spring-framework/blob/main/spring-test/src/main/java/org/springframework/test/web/reactive/server/DefaultWebTestClient.java#L106
-    String DEFAULT_TIMEOUT = "PT5S";
-
-    String DEFAULT_ENTITY_TIMEOUT = "PT5S";
 }

@@ -2,6 +2,7 @@ package com.konsol.beatstream.web.rest.errors;
 
 import static org.springframework.core.annotation.AnnotatedElementUtils.findMergedAnnotation;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,26 +17,21 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConversionException;
 import org.springframework.lang.Nullable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.ErrorResponseException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.support.WebExchangeBindException;
-import org.springframework.web.reactive.result.method.annotation.ResponseEntityExceptionHandler;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import tech.jhipster.config.JHipsterConstants;
-import tech.jhipster.web.rest.errors.ExceptionTranslation;
 import tech.jhipster.web.rest.errors.ProblemDetailWithCause;
 import tech.jhipster.web.rest.errors.ProblemDetailWithCause.ProblemDetailWithCauseBuilder;
 import tech.jhipster.web.util.HeaderUtil;
@@ -45,7 +41,7 @@ import tech.jhipster.web.util.HeaderUtil;
  * The error response follows RFC7807 - Problem Details for HTTP APIs (https://tools.ietf.org/html/rfc7807).
  */
 @ControllerAdvice
-public class ExceptionTranslator extends ResponseEntityExceptionHandler implements ExceptionTranslation {
+public class ExceptionTranslator extends ResponseEntityExceptionHandler {
 
     private static final String FIELD_ERRORS_KEY = "fieldErrors";
     private static final String MESSAGE_KEY = "message";
@@ -62,31 +58,25 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
     }
 
     @ExceptionHandler
-    @Override
-    public Mono<ResponseEntity<Object>> handleAnyException(Throwable ex, ServerWebExchange request) {
+    public ResponseEntity<Object> handleAnyException(Throwable ex, NativeWebRequest request) {
         ProblemDetailWithCause pdCause = wrapAndCustomizeProblem(ex, request);
         return handleExceptionInternal((Exception) ex, pdCause, buildHeaders(ex), HttpStatusCode.valueOf(pdCause.getStatus()), request);
     }
 
     @Nullable
     @Override
-    protected Mono<ResponseEntity<Object>> handleExceptionInternal(
+    protected ResponseEntity<Object> handleExceptionInternal(
         Exception ex,
         @Nullable Object body,
         HttpHeaders headers,
         HttpStatusCode statusCode,
-        ServerWebExchange request
+        WebRequest request
     ) {
-        body = body == null ? wrapAndCustomizeProblem((Throwable) ex, (ServerWebExchange) request) : body;
-        if (request.getResponse().isCommitted()) {
-            return Mono.error(ex);
-        }
-        return Mono.just(
-            new ResponseEntity<>(body, updateContentType(headers), HttpStatusCode.valueOf(((ProblemDetailWithCause) body).getStatus()))
-        );
+        body = body == null ? wrapAndCustomizeProblem((Throwable) ex, (NativeWebRequest) request) : body;
+        return super.handleExceptionInternal(ex, body, headers, statusCode, request);
     }
 
-    protected ProblemDetailWithCause wrapAndCustomizeProblem(Throwable ex, ServerWebExchange request) {
+    protected ProblemDetailWithCause wrapAndCustomizeProblem(Throwable ex, NativeWebRequest request) {
         return customizeProblem(getProblemDetailWithCause(ex), ex, request);
     }
 
@@ -101,21 +91,13 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
             ex instanceof com.konsol.beatstream.service.InvalidPasswordException
         ) return (ProblemDetailWithCause) new InvalidPasswordException().getBody();
 
-        if (ex instanceof AuthenticationException) {
-            // Ensure no information about existing users is revealed via failed authentication attempts
-            return ProblemDetailWithCauseBuilder.instance()
-                .withStatus(toStatus(ex).value())
-                .withTitle("Unauthorized")
-                .withDetail("Invalid credentials")
-                .build();
-        }
         if (
             ex instanceof ErrorResponseException exp && exp.getBody() instanceof ProblemDetailWithCause problemDetailWithCause
         ) return problemDetailWithCause;
         return ProblemDetailWithCauseBuilder.instance().withStatus(toStatus(ex).value()).build();
     }
 
-    protected ProblemDetailWithCause customizeProblem(ProblemDetailWithCause problem, Throwable err, ServerWebExchange request) {
+    protected ProblemDetailWithCause customizeProblem(ProblemDetailWithCause problem, Throwable err, NativeWebRequest request) {
         if (problem.getStatus() <= 0) problem.setStatus(toStatus(err));
 
         if (problem.getType() == null || problem.getType().equals(URI.create("about:blank"))) problem.setType(getMappedType(err));
@@ -141,7 +123,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
         if (problemProperties == null || !problemProperties.containsKey(PATH_KEY)) problem.setProperty(PATH_KEY, getPathValue(request));
 
         if (
-            (err instanceof WebExchangeBindException fieldException) &&
+            (err instanceof MethodArgumentNotValidException fieldException) &&
             (problemProperties == null || !problemProperties.containsKey(FIELD_ERRORS_KEY))
         ) problem.setProperty(FIELD_ERRORS_KEY, getFieldErrors(fieldException));
 
@@ -154,7 +136,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
         return getCustomizedTitle(err) != null ? getCustomizedTitle(err) : extractTitleForResponseStatus(err, statusCode);
     }
 
-    private List<FieldErrorVM> getFieldErrors(WebExchangeBindException ex) {
+    private List<FieldErrorVM> getFieldErrors(MethodArgumentNotValidException ex) {
         return ex
             .getBindingResult()
             .getFieldErrors()
@@ -172,6 +154,11 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
     private String extractTitleForResponseStatus(Throwable err, int statusCode) {
         ResponseStatus specialStatus = extractResponseStatus(err);
         return specialStatus == null ? HttpStatus.valueOf(statusCode).getReasonPhrase() : specialStatus.reason();
+    }
+
+    private String extractURI(NativeWebRequest request) {
+        HttpServletRequest nativeRequest = request.getNativeRequest(HttpServletRequest.class);
+        return nativeRequest != null ? nativeRequest.getRequestURI() : StringUtils.EMPTY;
     }
 
     private HttpStatus toStatus(final Throwable throwable) {
@@ -202,8 +189,6 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
             return ErrorConstants.ERR_VALIDATION;
         } else if (err instanceof ConcurrencyFailureException || err.getCause() instanceof ConcurrencyFailureException) {
             return ErrorConstants.ERR_CONCURRENCY_FAILURE;
-        } else if (err instanceof WebExchangeBindException) {
-            return ErrorConstants.ERR_VALIDATION;
         }
         return null;
     }
@@ -228,13 +213,12 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
         if (err instanceof AccessDeniedException) return HttpStatus.FORBIDDEN;
         if (err instanceof ConcurrencyFailureException) return HttpStatus.CONFLICT;
         if (err instanceof BadCredentialsException) return HttpStatus.UNAUTHORIZED;
-        if (err instanceof UsernameNotFoundException) return HttpStatus.UNAUTHORIZED;
         return null;
     }
 
-    private URI getPathValue(ServerWebExchange request) {
+    private URI getPathValue(NativeWebRequest request) {
         if (request == null) return URI.create("about:blank");
-        return request.getRequest().getURI();
+        return URI.create(extractURI(request));
     }
 
     private HttpHeaders buildHeaders(Throwable err) {
@@ -249,15 +233,7 @@ public class ExceptionTranslator extends ResponseEntityExceptionHandler implemen
             : null;
     }
 
-    private HttpHeaders updateContentType(HttpHeaders headers) {
-        if (headers == null) {
-            headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PROBLEM_JSON);
-        }
-        return headers;
-    }
-
-    public Optional<ProblemDetailWithCause> buildCause(final Throwable throwable, ServerWebExchange request) {
+    public Optional<ProblemDetailWithCause> buildCause(final Throwable throwable, NativeWebRequest request) {
         if (throwable != null && isCasualChainEnabled()) {
             return Optional.of(customizeProblem(getProblemDetailWithCause(throwable), throwable, request));
         }

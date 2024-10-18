@@ -2,26 +2,30 @@ package com.konsol.beatstream.repository;
 
 import com.konsol.beatstream.domain.User;
 import java.time.Instant;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.*;
-import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 
 /**
- * Spring Data MongoDB reactive repository for the {@link User} entity.
+ * Spring Data MongoDB repository for the {@link User} entity.
  */
 @Repository
-public interface UserRepository extends ReactiveMongoRepository<User, String> {
-    Mono<User> findOneByActivationKey(String activationKey);
-    Flux<User> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime);
-    Mono<User> findOneByResetKey(String resetKey);
-    Mono<User> findOneByEmailIgnoreCase(String email);
-    Mono<User> findOneByLogin(String login);
+public interface UserRepository extends MongoRepository<User, String> {
+    String USERS_BY_LOGIN_CACHE = "usersByLogin";
 
-    Flux<User> findAllByIdNotNull(Pageable pageable);
+    String USERS_BY_EMAIL_CACHE = "usersByEmail";
+    Optional<User> findOneByActivationKey(String activationKey);
+    List<User> findAllByActivatedIsFalseAndActivationKeyIsNotNullAndCreatedDateBefore(Instant dateTime);
+    Optional<User> findOneByResetKey(String resetKey);
 
-    Flux<User> findAllByIdNotNullAndActivatedIsTrue(Pageable pageable);
+    @Cacheable(cacheNames = USERS_BY_EMAIL_CACHE)
+    Optional<User> findOneByEmailIgnoreCase(String email);
 
-    Mono<Long> count();
+    @Cacheable(cacheNames = USERS_BY_LOGIN_CACHE)
+    Optional<User> findOneByLogin(String login);
+
+    Page<User> findAllByIdNotNullAndActivatedIsTrue(Pageable pageable);
 }

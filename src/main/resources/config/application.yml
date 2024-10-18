@@ -40,6 +40,7 @@ management:
           - loggers
           - prometheus
           - threaddump
+          - caches
   endpoint:
     health:
       show-details: when_authorized
@@ -97,7 +98,7 @@ spring:
     name: beatStream
   docker:
     compose:
-      enabled: true
+      enabled: false
       lifecycle-management: start-only
       file: src/main/docker/services.yml
   profiles:
@@ -117,7 +118,7 @@ spring:
     basename: i18n/messages
   main:
     allow-bean-definition-overriding: true
-  webflux:
+  mvc:
     problemdetails:
       enabled: true
   security:

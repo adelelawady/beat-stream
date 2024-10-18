@@ -3,7 +3,6 @@ package com.konsol.beatstream.security.jwt;
 import static com.konsol.beatstream.security.SecurityUtils.AUTHORITIES_KEY;
 import static com.konsol.beatstream.security.SecurityUtils.JWT_ALGORITHM;
 
-import com.konsol.beatstream.repository.UserRepository;
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -13,28 +12,28 @@ import java.util.Collections;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
 import org.springframework.security.crypto.codec.Hex;
 import org.springframework.security.oauth2.jwt.JwsHeader;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 public class JwtAuthenticationTestUtils {
+
+    public static final String BEARER = "Bearer ";
+
+    @Bean
+    private HandlerMappingIntrospector mvcHandlerMappingIntrospector() {
+        return new HandlerMappingIntrospector();
+    }
 
     @Bean
     private MeterRegistry meterRegistry() {
         return new SimpleMeterRegistry();
     }
-
-    @MockBean
-    private ReactiveUserDetailsService userDetailsService;
-
-    @MockBean
-    private UserRepository userRepository;
 
     public static String createValidToken(String jwtKey) {
         return createValidTokenForUser(jwtKey, "anonymous");

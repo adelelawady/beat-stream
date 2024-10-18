@@ -1,29 +1,29 @@
 package com.konsol.beatstream.config;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-import static org.springframework.security.web.server.util.matcher.ServerWebExchangeMatchers.pathMatchers;
 
-import com.konsol.beatstream.security.AuthoritiesConstants;
+import com.konsol.beatstream.security.*;
 import com.konsol.beatstream.web.filter.SpaWebFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
+import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer.FrameOptionsConfig;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.header.ReferrerPolicyServerHttpHeadersWriter;
-import org.springframework.security.web.server.header.XFrameOptionsServerHttpHeadersWriter.Mode;
-import org.springframework.security.web.server.util.matcher.NegatedServerWebExchangeMatcher;
-import org.springframework.security.web.server.util.matcher.OrServerWebExchangeMatcher;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
+import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import tech.jhipster.config.JHipsterProperties;
 
 @Configuration
-@EnableReactiveMethodSecurity
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfiguration {
 
     private final JHipsterProperties jHipsterProperties;
@@ -38,60 +38,59 @@ public class SecurityConfiguration {
     }
 
     @Bean
-    public ReactiveAuthenticationManager reactiveAuthenticationManager(ReactiveUserDetailsService userDetailsService) {
-        UserDetailsRepositoryReactiveAuthenticationManager authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(
-            userDetailsService
-        );
-        authenticationManager.setPasswordEncoder(passwordEncoder());
-        return authenticationManager;
-    }
-
-    @Bean
-    public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
+    public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         http
-            .securityMatcher(
-                new NegatedServerWebExchangeMatcher(
-                    new OrServerWebExchangeMatcher(pathMatchers("/app/**", "/i18n/**", "/content/**", "/swagger-ui/**"))
-                )
-            )
             .cors(withDefaults())
             .csrf(csrf -> csrf.disable())
-            .addFilterAfter(new SpaWebFilter(), SecurityWebFiltersOrder.HTTPS_REDIRECT)
+            .addFilterAfter(new SpaWebFilter(), BasicAuthenticationFilter.class)
             .headers(headers ->
                 headers
                     .contentSecurityPolicy(csp -> csp.policyDirectives(jHipsterProperties.getSecurity().getContentSecurityPolicy()))
-                    .frameOptions(frameOptions -> frameOptions.mode(Mode.DENY))
-                    .referrerPolicy(referrer ->
-                        referrer.policy(ReferrerPolicyServerHttpHeadersWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
-                    )
+                    .frameOptions(FrameOptionsConfig::sameOrigin)
+                    .referrerPolicy(referrer -> referrer.policy(ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
                     .permissionsPolicy(permissions ->
                         permissions.policy(
                             "camera=(), fullscreen=(self), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), midi=(), payment=(), sync-xhr=()"
                         )
                     )
             )
-            .authorizeExchange(authz ->
+            .authorizeHttpRequests(authz ->
                 // prettier-ignore
                 authz
-                    .pathMatchers("/").permitAll()
-                    .pathMatchers("/*.*").permitAll()
-                    .pathMatchers("/api/authenticate").permitAll()
-                    .pathMatchers("/api/register").permitAll()
-                    .pathMatchers("/api/activate").permitAll()
-                    .pathMatchers("/api/account/reset-password/init").permitAll()
-                    .pathMatchers("/api/account/reset-password/finish").permitAll()
-                    .pathMatchers("/api/admin/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .pathMatchers("/api/**").authenticated()
-                    .pathMatchers("/services/**").authenticated()
-                    .pathMatchers("/v3/api-docs/**").hasAuthority(AuthoritiesConstants.ADMIN)
-                    .pathMatchers("/management/health").permitAll()
-                    .pathMatchers("/management/health/**").permitAll()
-                    .pathMatchers("/management/info").permitAll()
-                    .pathMatchers("/management/prometheus").permitAll()
-                    .pathMatchers("/management/**").hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(mvc.pattern("/index.html"), mvc.pattern("/*.js"), mvc.pattern("/*.txt"), mvc.pattern("/*.json"), mvc.pattern("/*.map"), mvc.pattern("/*.css")).permitAll()
+                    .requestMatchers(mvc.pattern("/*.ico"), mvc.pattern("/*.png"), mvc.pattern("/*.svg"), mvc.pattern("/*.webapp")).permitAll()
+                    .requestMatchers(mvc.pattern("/app/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/i18n/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/content/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/swagger-ui/**")).permitAll()
+                    .requestMatchers(mvc.pattern(HttpMethod.POST, "/api/authenticate")).permitAll()
+                    .requestMatchers(mvc.pattern(HttpMethod.GET, "/api/authenticate")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/register")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/activate")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/account/reset-password/init")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/account/reset-password/finish")).permitAll()
+                    .requestMatchers(mvc.pattern("/api/admin/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(mvc.pattern("/api/**")).authenticated()
+                    .requestMatchers(mvc.pattern("/websocket/**")).authenticated()
+                    .requestMatchers(mvc.pattern("/v3/api-docs/**")).hasAuthority(AuthoritiesConstants.ADMIN)
+                    .requestMatchers(mvc.pattern("/management/health")).permitAll()
+                    .requestMatchers(mvc.pattern("/management/health/**")).permitAll()
+                    .requestMatchers(mvc.pattern("/management/info")).permitAll()
+                    .requestMatchers(mvc.pattern("/management/prometheus")).permitAll()
+                    .requestMatchers(mvc.pattern("/management/**")).hasAuthority(AuthoritiesConstants.ADMIN)
             )
-            .httpBasic(basic -> basic.disable())
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(exceptions ->
+                exceptions
+                    .authenticationEntryPoint(new BearerTokenAuthenticationEntryPoint())
+                    .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+            )
             .oauth2ResourceServer(oauth2 -> oauth2.jwt(withDefaults()));
         return http.build();
+    }
+
+    @Bean
+    MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
+        return new MvcRequestMatcher.Builder(introspector);
     }
 }

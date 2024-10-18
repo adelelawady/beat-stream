@@ -9,7 +9,7 @@
     "clientTestFrameworks": [],
     "clientTheme": "lux",
     "clientThemeVariant": "primary",
-    "creationTimestamp": 1729213021377,
+    "creationTimestamp": 1729220408664,
     "databaseType": "mongodb",
     "devDatabaseType": null,
     "devServerPort": 4200,
@@ -19,7 +19,7 @@
     "entities": [],
     "feignClient": null,
     "jhipsterVersion": "8.7.1",
-    "jwtSecretKey": "OGE1YjExMzg5N2NmYTU3YjE4MDNiOTZmYWEzODVlYzE2ZTllNGFmYzdmZGNlZGU5NzE2NzRiMDEyYWNhNmM0Y2ZkNzgyMWNmZWFkODdjNDZjZDRjNGRjNDA4MGMxZTViMDE3NzljZTBkZGI5ZTZjNDhhNThlNDU5NzcyZjBhNTk=",
+    "jwtSecretKey": "MWZkMmI1Yjk1ZDJmNDVkNjYxYjA5MDQ3Y2E2MTkyMTVkYjVkN2E2ZmRlMDRiNTYzYjBjZGE4YTI3ZWJjZmQxZmVjYzE0ZjkxOThkMjQyM2I1ODdhOTZlODU1OGMwZmRmNmNiODEzNTYxMDVjNDU3NWVkNzJjZmFjNGEzZjAzNjY=",
     "languages": ["en", "ar-ly"],
     "messageBroker": false,
     "microfrontend": null,
@@ -27,14 +27,15 @@
     "nativeLanguage": "en",
     "packageName": "com.konsol.beatstream",
     "prodDatabaseType": null,
-    "reactive": true,
+    "reactive": false,
     "searchEngine": false,
     "serverPort": null,
-    "serverSideOptions": ["enableSwaggerCodegen:true"],
+    "serverSideOptions": ["websocket:spring-websocket", "enableSwaggerCodegen:true"],
     "serviceDiscoveryType": false,
     "syncUserWithIdp": null,
     "testFrameworks": [],
-    "websocket": false,
-    "withAdminUi": true
+    "websocket": "spring-websocket",
+    "withAdminUi": true,
+    "skipDocker": true
   }
 }

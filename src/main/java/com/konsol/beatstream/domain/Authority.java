@@ -15,7 +15,7 @@ public class Authority implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @NotNull(message = "must not be null")
+    @NotNull
     @Size(max = 50)
     @Id
     private String name;

@@ -1,136 +1,74 @@
 package com.konsol.beatstream.web.filter;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.konsol.beatstream.IntegrationTest;
 import com.konsol.beatstream.security.AuthoritiesConstants;
-import java.time.Duration;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
 
-@AutoConfigureWebTestClient(timeout = IntegrationTest.DEFAULT_TIMEOUT)
+@AutoConfigureMockMvc
 @WithMockUser
 @IntegrationTest
 class SpaWebFilterIT {
 
     @Autowired
-    private WebTestClient webTestClient;
+    private MockMvc mockMvc;
 
     @Test
-    void testFilterForwardsToIndex() {
-        webTestClient
-            .get()
-            .uri("/")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType("text/html;charset=UTF-8")
-            .expectBody(String.class)
-            .isEqualTo(SpaWebFilterTestController.INDEX_HTML_TEST_CONTENT);
+    void testFilterForwardsToIndex() throws Exception {
+        mockMvc.perform(get("/")).andExpect(status().isOk()).andExpect(forwardedUrl("/index.html"));
     }
 
     @Test
-    void testFilterDoesNotForwardToIndexForApi() {
-        webTestClient.get().uri("/api/authenticate").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("user");
+    void testFilterDoesNotForwardToIndexForApi() throws Exception {
+        mockMvc.perform(get("/api/authenticate")).andExpect(status().isOk()).andExpect(forwardedUrl(null));
     }
 
     @Test
     @WithMockUser(authorities = AuthoritiesConstants.ADMIN)
-    void testFilterDoesNotForwardToIndexForV3ApiDocs() {
-        webTestClient
-            .mutate()
-            .responseTimeout(Duration.ofMillis(10000))
-            .build()
-            .get()
-            .uri("/v3/api-docs")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON);
+    void testFilterDoesNotForwardToIndexForV3ApiDocs() throws Exception {
+        mockMvc.perform(get("/v3/api-docs")).andExpect(status().isOk()).andExpect(forwardedUrl(null));
     }
 
     @Test
-    void testFilterDoesNotForwardToIndexForDotFile() {
-        webTestClient.get().uri("/file.js").exchange().expectStatus().isNotFound();
+    void testFilterDoesNotForwardToIndexForDotFile() throws Exception {
+        mockMvc.perform(get("/file.js")).andExpect(status().isNotFound());
     }
 
     @Test
-    void getBackendEndpoint() {
-        webTestClient
-            .get()
-            .uri("/test")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType("text/html;charset=UTF-8")
-            .expectBody(String.class)
-            .isEqualTo(SpaWebFilterTestController.INDEX_HTML_TEST_CONTENT);
+    void getBackendEndpoint() throws Exception {
+        mockMvc.perform(get("/test")).andExpect(status().isOk()).andExpect(forwardedUrl("/index.html"));
     }
 
     @Test
-    void forwardUnmappedFirstLevelMapping() {
-        webTestClient
-            .get()
-            .uri("/first-level")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType("text/html;charset=UTF-8")
-            .expectBody(String.class)
-            .isEqualTo(SpaWebFilterTestController.INDEX_HTML_TEST_CONTENT);
+    void forwardUnmappedFirstLevelMapping() throws Exception {
+        mockMvc.perform(get("/first-level")).andExpect(status().isOk()).andExpect(forwardedUrl("/index.html"));
     }
 
     @Test
-    void forwardUnmappedSecondLevelMapping() {
-        webTestClient
-            .get()
-            .uri("/first-level/second-level")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType("text/html;charset=UTF-8")
-            .expectBody(String.class)
-            .isEqualTo(SpaWebFilterTestController.INDEX_HTML_TEST_CONTENT);
+    void forwardUnmappedSecondLevelMapping() throws Exception {
+        mockMvc.perform(get("/first-level/second-level")).andExpect(status().isOk()).andExpect(forwardedUrl("/index.html"));
     }
 
     @Test
-    void forwardUnmappedThirdLevelMapping() {
-        webTestClient
-            .get()
-            .uri("/first-level/second-level/third-level")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType("text/html;charset=UTF-8")
-            .expectBody(String.class)
-            .isEqualTo(SpaWebFilterTestController.INDEX_HTML_TEST_CONTENT);
+    void forwardUnmappedThirdLevelMapping() throws Exception {
+        mockMvc.perform(get("/first-level/second-level/third-level")).andExpect(status().isOk()).andExpect(forwardedUrl("/index.html"));
     }
 
     @Test
-    void forwardUnmappedDeepMapping() {
-        webTestClient
-            .get()
-            .uri("/1/2/3/4/5/6/7/8/9/10")
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType("text/html;charset=UTF-8")
-            .expectBody(String.class)
-            .isEqualTo(SpaWebFilterTestController.INDEX_HTML_TEST_CONTENT);
+    void forwardUnmappedDeepMapping() throws Exception {
+        mockMvc.perform(get("/1/2/3/4/5/6/7/8/9/10")).andExpect(forwardedUrl("/index.html"));
     }
 
     @Test
-    void getUnmappedFirstLevelFile() {
-        webTestClient.get().uri("/foo.js").exchange().expectStatus().isNotFound();
+    void getUnmappedFirstLevelFile() throws Exception {
+        mockMvc.perform(get("/foo.js")).andExpect(status().isNotFound());
     }
 
     /**
@@ -139,12 +77,12 @@ class SpaWebFilterIT {
      * allows this file in SecurityConfiguration.
      */
     @Test
-    void getUnmappedSecondLevelFile() {
-        webTestClient.get().uri("/foo/bar.js").exchange().expectStatus().isForbidden();
+    void getUnmappedSecondLevelFile() throws Exception {
+        mockMvc.perform(get("/foo/bar.js")).andExpect(status().isForbidden());
     }
 
     @Test
-    void getUnmappedThirdLevelFile() {
-        webTestClient.get().uri("/foo/another/bar.js").exchange().expectStatus().isForbidden();
+    void getUnmappedThirdLevelFile() throws Exception {
+        mockMvc.perform(get("/foo/another/bar.js")).andExpect(status().isForbidden());
     }
 }

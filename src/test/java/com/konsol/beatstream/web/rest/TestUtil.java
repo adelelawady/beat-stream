@@ -12,6 +12,9 @@ import org.hamcrest.TypeSafeMatcher;
 import org.springframework.cglib.proxy.Enhancer;
 import org.springframework.cglib.proxy.MethodInterceptor;
 import org.springframework.cglib.proxy.MethodProxy;
+import org.springframework.format.datetime.standard.DateTimeFormatterRegistrar;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.support.FormattingConversionService;
 
 /**
  * Utility class for testing REST controllers.
@@ -141,6 +144,18 @@ public final class TestUtil {
         assertThat(domainObject1).isNotEqualTo(domainObject2);
         // HashCodes are equals because the objects are not persisted yet
         assertThat(domainObject1).hasSameHashCodeAs(domainObject2);
+    }
+
+    /**
+     * Create a {@link FormattingConversionService} which use ISO date format, instead of the localized one.
+     * @return the {@link FormattingConversionService}.
+     */
+    public static FormattingConversionService createFormattingConversionService() {
+        DefaultFormattingConversionService dfcs = new DefaultFormattingConversionService();
+        DateTimeFormatterRegistrar registrar = new DateTimeFormatterRegistrar();
+        registrar.setUseIsoFormat(true);
+        registrar.registerFormatters(dfcs);
+        return dfcs;
     }
 
     @SuppressWarnings("unchecked")

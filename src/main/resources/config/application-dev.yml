@@ -32,7 +32,7 @@ spring:
       indent-output: true
   data:
     mongodb:
-      uri: mongodb://localhost:27017/beatStream?waitQueueMultiple=1000
+      uri: mongodb://localhost:27017/beatStream
   mail:
     host: localhost
     port: 25
@@ -55,6 +55,10 @@ server:
 # ===================================================================
 
 jhipster:
+  cache: # Cache configuration
+    ehcache: # Ehcache configuration
+      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
+      max-entries: 100 # Number of objects in each cache entry
   # CORS is only enabled by default with the "dev" profile
   cors:
     # Allow Ionic for JHipster by default (* no longer allowed in Spring Boot 2.4+)
@@ -70,7 +74,7 @@ jhipster:
     authentication:
       jwt:
         # This token must be encoded using Base64 and be at least 256 bits long (you can type `openssl rand -base64 64` on your command line to generate a 512 bits one)
-        base64-secret: OGE1YjExMzg5N2NmYTU3YjE4MDNiOTZmYWEzODVlYzE2ZTllNGFmYzdmZGNlZGU5NzE2NzRiMDEyYWNhNmM0Y2ZkNzgyMWNmZWFkODdjNDZjZDRjNGRjNDA4MGMxZTViMDE3NzljZTBkZGI5ZTZjNDhhNThlNDU5NzcyZjBhNTk=
+        base64-secret: MWZkMmI1Yjk1ZDJmNDVkNjYxYjA5MDQ3Y2E2MTkyMTVkYjVkN2E2ZmRlMDRiNTYzYjBjZGE4YTI3ZWJjZmQxZmVjYzE0ZjkxOThkMjQyM2I1ODdhOTZlODU1OGMwZmRmNmNiODEzNTYxMDVjNDU3NWVkNzJjZmFjNGEzZjAzNjY=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000

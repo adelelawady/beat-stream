@@ -2,25 +2,26 @@ package com.konsol.beatstream.security.jwt;
 
 import static com.konsol.beatstream.security.jwt.JwtAuthenticationTestUtils.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-import com.konsol.beatstream.IntegrationTest;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Collection;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-@AutoConfigureWebTestClient(timeout = IntegrationTest.DEFAULT_TIMEOUT)
+@AutoConfigureMockMvc
 @AuthenticationIntegrationTest
 class TokenAuthenticationSecurityMetersIT {
 
     private static final String INVALID_TOKENS_METER_EXPECTED_NAME = "security.authentication.invalid-tokens";
 
     @Autowired
-    private WebTestClient webTestClient;
+    private MockMvc mvc;
 
     @Value("${jhipster.security.authentication.jwt.base64-secret}")
     private String jwtKey;
@@ -77,15 +78,8 @@ class TokenAuthenticationSecurityMetersIT {
         assertThat(meterRegistry.get(INVALID_TOKENS_METER_EXPECTED_NAME).tag("cause", "malformed").counter().count()).isEqualTo(count + 1);
     }
 
-    private void tryToAuthenticate(String token) {
-        webTestClient
-            .get()
-            .uri("/api/authenticate")
-            .headers(headers -> headers.setBearerAuth(token))
-            .exchange()
-            .returnResult(String.class)
-            .getResponseBody()
-            .blockLast();
+    private void tryToAuthenticate(String token) throws Exception {
+        mvc.perform(MockMvcRequestBuilders.get("/api/authenticate").header(AUTHORIZATION, BEARER + token));
     }
 
     private double aggregate(Collection<Counter> counters) {

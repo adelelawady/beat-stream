@@ -7,17 +7,15 @@ import jakarta.validation.Valid;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import tech.jhipster.web.util.HeaderUtil;
-import tech.jhipster.web.util.reactive.ResponseUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link com.konsol.beatstream.domain.Authority}.
@@ -48,26 +46,15 @@ public class AuthorityResource {
      */
     @PostMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public Mono<ResponseEntity<Authority>> createAuthority(@Valid @RequestBody Authority authority) throws URISyntaxException {
+    public ResponseEntity<Authority> createAuthority(@Valid @RequestBody Authority authority) throws URISyntaxException {
         LOG.debug("REST request to save Authority : {}", authority);
-        return authorityRepository
-            .existsById(authority.getName())
-            .flatMap(exists -> {
-                if (exists) {
-                    return Mono.error(new BadRequestAlertException("authority already exists", ENTITY_NAME, "idexists"));
-                }
-                return authorityRepository
-                    .save(authority)
-                    .map(result -> {
-                        try {
-                            return ResponseEntity.created(new URI("/api/authorities/" + result.getName()))
-                                .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getName()))
-                                .body(result);
-                        } catch (URISyntaxException e) {
-                            throw new RuntimeException(e);
-                        }
-                    });
-            });
+        if (authorityRepository.existsById(authority.getName())) {
+            throw new BadRequestAlertException("authority already exists", ENTITY_NAME, "idexists");
+        }
+        authority = authorityRepository.save(authority);
+        return ResponseEntity.created(new URI("/api/authorities/" + authority.getName()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, authority.getName()))
+            .body(authority);
     }
 
     /**
@@ -75,21 +62,10 @@ public class AuthorityResource {
      *
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of authorities in body.
      */
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping("")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public Mono<List<Authority>> getAllAuthorities() {
+    public List<Authority> getAllAuthorities() {
         LOG.debug("REST request to get all Authorities");
-        return authorityRepository.findAll().collectList();
-    }
-
-    /**
-     * {@code GET  /authorities} : get all the authorities as a stream.
-     * @return the {@link Flux} of authorities.
-     */
-    @GetMapping(value = "", produces = MediaType.APPLICATION_NDJSON_VALUE)
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public Flux<Authority> getAllAuthoritiesAsStream() {
-        LOG.debug("REST request to get all Authorities as a stream");
         return authorityRepository.findAll();
     }
 
@@ -101,9 +77,9 @@ public class AuthorityResource {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public Mono<ResponseEntity<Authority>> getAuthority(@PathVariable("id") String id) {
+    public ResponseEntity<Authority> getAuthority(@PathVariable("id") String id) {
         LOG.debug("REST request to get Authority : {}", id);
-        Mono<Authority> authority = authorityRepository.findById(id);
+        Optional<Authority> authority = authorityRepository.findById(id);
         return ResponseUtil.wrapOrNotFound(authority);
     }
 
@@ -115,14 +91,9 @@ public class AuthorityResource {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
-    public Mono<ResponseEntity<Void>> deleteAuthority(@PathVariable("id") String id) {
+    public ResponseEntity<Void> deleteAuthority(@PathVariable("id") String id) {
         LOG.debug("REST request to delete Authority : {}", id);
-        return authorityRepository
-            .deleteById(id)
-            .then(
-                Mono.just(
-                    ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build()
-                )
-            );
+        authorityRepository.deleteById(id);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id)).build();
     }
 }

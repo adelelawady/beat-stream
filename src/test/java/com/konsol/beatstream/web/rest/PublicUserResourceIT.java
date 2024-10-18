@@ -1,26 +1,29 @@
 package com.konsol.beatstream.web.rest;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.konsol.beatstream.IntegrationTest;
 import com.konsol.beatstream.domain.User;
 import com.konsol.beatstream.repository.UserRepository;
 import com.konsol.beatstream.security.AuthoritiesConstants;
-import com.konsol.beatstream.service.UserService;
+import java.util.Objects;
 import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.servlet.MockMvc;
 
 /**
  * Integration tests for the {@link PublicUserResource} REST controller.
  */
-@AutoConfigureWebTestClient(timeout = IntegrationTest.DEFAULT_TIMEOUT)
+@AutoConfigureMockMvc
 @WithMockUser(authorities = AuthoritiesConstants.ADMIN)
 @IntegrationTest
 class PublicUserResourceIT {
@@ -29,18 +32,12 @@ class PublicUserResourceIT {
     private UserRepository userRepository;
 
     @Autowired
-    private UserService userService;
+    private CacheManager cacheManager;
 
     @Autowired
-    private WebTestClient webTestClient;
+    private MockMvc restUserMockMvc;
 
     private User user;
-    private Long numberOfUsers;
-
-    @BeforeEach
-    public void countUsers() {
-        numberOfUsers = userRepository.count().block();
-    }
 
     @BeforeEach
     public void initTest() {
@@ -49,36 +46,29 @@ class PublicUserResourceIT {
 
     @AfterEach
     public void cleanupAndCheck() {
-        userService.deleteUser(user.getLogin()).block();
-        assertThat(userRepository.count().block()).isEqualTo(numberOfUsers);
-        numberOfUsers = null;
+        cacheManager
+            .getCacheNames()
+            .stream()
+            .map(cacheName -> this.cacheManager.getCache(cacheName))
+            .filter(Objects::nonNull)
+            .forEach(Cache::clear);
+        userRepository.deleteAll();
     }
 
     @Test
-    void getAllPublicUsers() {
+    void getAllPublicUsers() throws Exception {
         // Initialize the database
-        userRepository.save(user).block();
+        userRepository.save(user);
 
         // Get all the users
-        webTestClient
-            .get()
-            .uri("/api/users?sort=id,desc")
-            .accept(MediaType.APPLICATION_JSON)
-            .exchange()
-            .expectStatus()
-            .isOk()
-            .expectHeader()
-            .contentType(MediaType.APPLICATION_JSON)
-            .expectBody()
-            .jsonPath("$.[?(@.id == '%s')].login", user.getId())
-            .isEqualTo(user.getLogin())
-            .jsonPath("$.[?(@.id == '%s')].keys()", user.getId())
-            .isEqualTo(Set.of("id", "login"))
-            .jsonPath("$.[*].email")
-            .doesNotHaveJsonPath()
-            .jsonPath("$.[*].imageUrl")
-            .doesNotHaveJsonPath()
-            .jsonPath("$.[*].langKey")
-            .doesNotHaveJsonPath();
+        restUserMockMvc
+            .perform(get("/api/users").accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[?(@.id == '%s')].login", user.getId()).value(user.getLogin()))
+            .andExpect(jsonPath("$.[?(@.id == '%s')].keys()", user.getId()).value(Set.of("id", "login")))
+            .andExpect(jsonPath("$.[*].email").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.[*].imageUrl").doesNotHaveJsonPath())
+            .andExpect(jsonPath("$.[*].langKey").doesNotHaveJsonPath());
     }
 }

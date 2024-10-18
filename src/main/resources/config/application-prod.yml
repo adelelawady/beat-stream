@@ -33,7 +33,7 @@ spring:
       enabled: false
   data:
     mongodb:
-      uri: mongodb://localhost:27017/beatStream?waitQueueMultiple=1000
+      uri: mongodb://localhost:27017/beatStream
   mail:
     host: localhost
     port: 25
@@ -79,6 +79,10 @@ jhipster:
   http:
     cache: # Used by the CachingHttpHeadersFilter
       timeToLiveInDays: 1461
+  cache: # Cache configuration
+    ehcache: # Ehcache configuration
+      time-to-live-seconds: 3600 # By default objects stay 1 hour in the cache
+      max-entries: 1000 # Number of objects in each cache entry
   security:
     authentication:
       jwt:
@@ -87,7 +91,7 @@ jhipster:
         # - In the Consul configserver
         # - In a separate `application-prod.yml` file, in the same folder as your executable JAR file
         # - In the `JHIPSTER_SECURITY_AUTHENTICATION_JWT_BASE64_SECRET` environment variable
-        base64-secret: OGE1YjExMzg5N2NmYTU3YjE4MDNiOTZmYWEzODVlYzE2ZTllNGFmYzdmZGNlZGU5NzE2NzRiMDEyYWNhNmM0Y2ZkNzgyMWNmZWFkODdjNDZjZDRjNGRjNDA4MGMxZTViMDE3NzljZTBkZGI5ZTZjNDhhNThlNDU5NzcyZjBhNTk=
+        base64-secret: MWZkMmI1Yjk1ZDJmNDVkNjYxYjA5MDQ3Y2E2MTkyMTVkYjVkN2E2ZmRlMDRiNTYzYjBjZGE4YTI3ZWJjZmQxZmVjYzE0ZjkxOThkMjQyM2I1ODdhOTZlODU1OGMwZmRmNmNiODEzNTYxMDVjNDU3NWVkNzJjZmFjNGEzZjAzNjY=
         # Token is valid 24 hours
         token-validity-in-seconds: 86400
         token-validity-in-seconds-for-remember-me: 2592000
