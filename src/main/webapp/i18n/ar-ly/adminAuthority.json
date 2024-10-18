@@ -1,0 +1,23 @@
+{
+  "beatStreamApp": {
+    "adminAuthority": {
+      "home": {
+        "title": "Authorities",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Authority جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Authority",
+        "notFound": "لم يتم العثور على Authorities"
+      },
+      "created": "Authority جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Authority تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Authority تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Authority {{ id }}؟"
+      },
+      "detail": {
+        "title": "Authority"
+      },
+      "name": "Name"
+    }
+  }
+}

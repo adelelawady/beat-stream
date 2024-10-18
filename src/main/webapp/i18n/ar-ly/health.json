@@ -1,0 +1,33 @@
+{
+  "health": {
+    "title": "تدقيقات الصحة",
+    "refresh.button": "تحديث",
+    "stacktrace": "تتبع المكدس",
+    "details": {
+      "details": "تفاصيل",
+      "properties": "الخصائص",
+      "name": "اسم",
+      "value": "القيمة",
+      "error": "خطأ"
+    },
+    "indicator": {
+      "binders": "Message broker",
+      "diskSpace": "مساحة القرص",
+      "mail": "البريد الإلكتروني",
+      "livenessState": "Liveness state",
+      "readinessState": "Readiness state",
+      "ping": "Application",
+      "mongo": "MongoDB"
+    },
+    "table": {
+      "service": "اسم الخدمة",
+      "status": "الحالة"
+    },
+    "status": {
+      "UNKNOWN": "UNKNOWN",
+      "UP": "تشتغل",
+      "OUT_OF_SERVICE": "OUT_OF_SERVICE",
+      "DOWN": "عاطلة"
+    }
+  }
+}
