@@ -34,6 +34,9 @@ public class Playlist implements Serializable {
     @JsonIgnoreProperties(value = { "artist", "album", "playlists" }, allowSetters = true)
     private Set<Track> tracks = new HashSet<>();
 
+    @Field("ownerId")
+    private String ownerId;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public String getId() {
@@ -125,5 +128,13 @@ public class Playlist implements Serializable {
             ", title='" + getTitle() + "'" +
             ", description='" + getDescription() + "'" +
             "}";
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }

@@ -1,6 +1,8 @@
 package com.konsol.beatstream.service;
 
+import com.konsol.beatstream.service.api.dto.Playlist;
 import com.konsol.beatstream.service.dto.PlaylistDTO;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ public interface PlaylistService {
      */
     PlaylistDTO save(PlaylistDTO playlistDTO);
 
+    com.konsol.beatstream.domain.Playlist save(com.konsol.beatstream.domain.Playlist playlist);
     /**
      * Updates a playlist.
      *
@@ -55,7 +58,7 @@ public interface PlaylistService {
      * @param id the id of the entity.
      * @return the entity.
      */
-    Optional<PlaylistDTO> findOne(String id);
+    Optional<com.konsol.beatstream.domain.Playlist> findOneDomain(String id);
 
     /**
      * Delete the "id" playlist.
@@ -63,4 +66,12 @@ public interface PlaylistService {
      * @param id the id of the entity.
      */
     void delete(String id);
+
+    List<Playlist> getMyPlaylists();
+
+    Playlist createPlaylist(Playlist playlistDTO);
+
+    Playlist getPlaylist(String playlistId);
+
+    void deleteAllPlaylist(String playlistId);
 }

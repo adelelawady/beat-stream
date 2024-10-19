@@ -1,10 +1,17 @@
 package com.konsol.beatstream.service.impl;
 
+import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
+
 import com.konsol.beatstream.domain.BeatStreamFile;
+import com.konsol.beatstream.domain.User;
 import com.konsol.beatstream.repository.BeatStreamFileRepository;
 import com.konsol.beatstream.service.BeatStreamFileService;
+import com.konsol.beatstream.service.UserService;
+import com.konsol.beatstream.service.bucket.BucketManager;
 import com.konsol.beatstream.service.dto.BeatStreamFileDTO;
 import com.konsol.beatstream.service.mapper.BeatStreamFileMapper;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -12,6 +19,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service Implementation for managing {@link com.konsol.beatstream.domain.BeatStreamFile}.
@@ -25,9 +33,20 @@ public class BeatStreamFileServiceImpl implements BeatStreamFileService {
 
     private final BeatStreamFileMapper beatStreamFileMapper;
 
-    public BeatStreamFileServiceImpl(BeatStreamFileRepository beatStreamFileRepository, BeatStreamFileMapper beatStreamFileMapper) {
+    private final BucketManager bucketManager;
+
+    private final UserService userService;
+
+    public BeatStreamFileServiceImpl(
+        BeatStreamFileRepository beatStreamFileRepository,
+        BeatStreamFileMapper beatStreamFileMapper,
+        BucketManager bucketManager,
+        UserService userService
+    ) {
         this.beatStreamFileRepository = beatStreamFileRepository;
         this.beatStreamFileMapper = beatStreamFileMapper;
+        this.bucketManager = bucketManager;
+        this.userService = userService;
     }
 
     @Override
@@ -81,5 +100,31 @@ public class BeatStreamFileServiceImpl implements BeatStreamFileService {
     public void delete(String id) {
         LOG.debug("Request to delete BeatStreamFile : {}", id);
         beatStreamFileRepository.deleteById(id);
+    }
+
+    @Override
+    public BeatStreamFile uploadAudioFile(MultipartFile resource) {
+        if (resource == null) {
+            return null;
+        }
+        BeatStreamFile beatStreamFile = new BeatStreamFile();
+        User user = userService.getCurrentUser();
+
+        try {
+            Path bucketPath = rootPath.resolve(user.getId() + "\\" + "audioFiles");
+            bucketManager.createBucket(user.getId());
+            bucketManager.createBucket(user.getId() + "\\" + "audioFiles");
+            beatStreamFile.bucket(user.getId() + "\\" + "audioFiles");
+            beatStreamFile.name(resource.getName());
+            beatStreamFile.setSize(resource.getSize());
+            beatStreamFile.setType("audio");
+            beatStreamFile.setFullPath(bucketPath + "\\" + resource.getName() + "\\" + user.getId());
+            beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
+            bucketManager.uploadFile(beatStreamFile.getId(), user.getId() + "\\" + "audioFiles", resource.getInputStream());
+
+            return beatStreamFile;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

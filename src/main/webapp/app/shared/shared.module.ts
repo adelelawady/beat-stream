@@ -8,6 +8,7 @@ import FindLanguageFromKeyPipe from './language/find-language-from-key.pipe';
 import TranslateDirective from './language/translate.directive';
 import { AlertComponent } from './alert/alert.component';
 import { AlertErrorComponent } from './alert/alert-error.component';
+import { FormsModule } from '@angular/forms';
 
 /**
  * Application wide Module
@@ -17,6 +18,7 @@ import { AlertErrorComponent } from './alert/alert-error.component';
   exports: [
     CommonModule,
     NgbModule,
+    FormsModule, // Add FormsModule here
     FontAwesomeModule,
     AlertComponent,
     AlertErrorComponent,

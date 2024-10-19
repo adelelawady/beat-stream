@@ -22,4 +22,6 @@ public interface PlaylistRepository extends MongoRepository<Playlist, String> {
 
     @Query("{'id': ?0}")
     Optional<Playlist> findOneWithEagerRelationships(String id);
+
+    List<Playlist> findAllByOwnerId(String ownerId);
 }

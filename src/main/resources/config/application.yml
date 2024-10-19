@@ -94,6 +94,10 @@ mongock:
     - com.konsol.beatstream.config.dbmigrations
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 550MB
+      max-request-size: 550MB
   application:
     name: beatStream
   docker:

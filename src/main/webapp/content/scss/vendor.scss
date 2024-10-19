@@ -4,6 +4,8 @@
 put Sass variables here:
 eg $input-color: red;
 ****************************/
+//@import "bootstrap/dist/css/bootstrap.min.css";
+
 @import 'bootswatch/dist/lux/variables';
 // Override Bootstrap variables
 @import 'bootstrap-variables';

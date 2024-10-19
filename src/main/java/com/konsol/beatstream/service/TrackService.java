@@ -1,9 +1,14 @@
 package com.konsol.beatstream.service;
 
+import com.konsol.beatstream.domain.BeatStreamFile;
+import com.konsol.beatstream.domain.Track;
+import com.konsol.beatstream.service.api.dto.AudioUpload;
 import com.konsol.beatstream.service.dto.TrackDTO;
 import java.util.Optional;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service Interface for managing {@link com.konsol.beatstream.domain.Track}.
@@ -55,4 +60,13 @@ public interface TrackService {
      * @param id the id of the entity.
      */
     void delete(String id);
+
+    boolean validateMp3Track(MultipartFile file);
+
+    Track extractTrackMetadata(MultipartFile file);
+
+    Track extractTrackCover(MultipartFile file);
+
+    Track createTrack(String name, MultipartFile audioFile, MultipartFile cover, String playlistId);
+    com.konsol.beatstream.service.api.dto.Track TrackIntoTrackDTO(com.konsol.beatstream.domain.Track track);
 }

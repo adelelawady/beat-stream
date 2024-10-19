@@ -1,8 +1,10 @@
 package com.konsol.beatstream.service;
 
+import com.konsol.beatstream.domain.BeatStreamFile;
 import com.konsol.beatstream.service.dto.BeatStreamFileDTO;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * Service Interface for managing {@link com.konsol.beatstream.domain.BeatStreamFile}.
@@ -53,4 +55,6 @@ public interface BeatStreamFileService {
      * @param id the id of the entity.
      */
     void delete(String id);
+
+    BeatStreamFile uploadAudioFile(MultipartFile resource);
 }

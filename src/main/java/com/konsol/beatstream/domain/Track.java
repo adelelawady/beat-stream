@@ -52,6 +52,12 @@ public class Track implements Serializable {
     @JsonIgnoreProperties(value = { "tracks" }, allowSetters = true)
     private Set<Playlist> playlists = new HashSet<>();
 
+    @Field("playCount")
+    private int playCount = 0;
+
+    @Field("ownerId")
+    private String ownerId;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public String getId() {
@@ -219,5 +225,21 @@ public class Track implements Serializable {
             ", audioFileId='" + getAudioFileId() + "'" +
             ", coverImageFileId='" + getCoverImageFileId() + "'" +
             "}";
+    }
+
+    public int getPlayCount() {
+        return playCount;
+    }
+
+    public void setPlayCount(int playCount) {
+        this.playCount = playCount;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }

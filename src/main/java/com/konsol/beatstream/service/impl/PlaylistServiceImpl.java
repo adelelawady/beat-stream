@@ -3,11 +3,17 @@ package com.konsol.beatstream.service.impl;
 import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.repository.PlaylistRepository;
 import com.konsol.beatstream.service.PlaylistService;
+import com.konsol.beatstream.service.TrackService;
+import com.konsol.beatstream.service.UserService;
 import com.konsol.beatstream.service.dto.PlaylistDTO;
 import com.konsol.beatstream.service.mapper.PlaylistMapper;
+import com.konsol.beatstream.service.mapper.TrackMapper;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,9 +30,20 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     private final PlaylistMapper playlistMapper;
 
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository, PlaylistMapper playlistMapper) {
+    private final UserService userService;
+
+    private final TrackMapper trackMapper;
+
+    public PlaylistServiceImpl(
+        PlaylistRepository playlistRepository,
+        PlaylistMapper playlistMapper,
+        UserService userService,
+        TrackMapper trackMapper
+    ) {
         this.playlistRepository = playlistRepository;
         this.playlistMapper = playlistMapper;
+        this.userService = userService;
+        this.trackMapper = trackMapper;
     }
 
     @Override
@@ -35,6 +52,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         Playlist playlist = playlistMapper.toEntity(playlistDTO);
         playlist = playlistRepository.save(playlist);
         return playlistMapper.toDto(playlist);
+    }
+
+    @Override
+    public Playlist save(Playlist playlist) {
+        return playlistRepository.save(playlist);
     }
 
     @Override
@@ -71,14 +93,57 @@ public class PlaylistServiceImpl implements PlaylistService {
     }
 
     @Override
-    public Optional<PlaylistDTO> findOne(String id) {
+    public Optional<Playlist> findOneDomain(String id) {
         LOG.debug("Request to get Playlist : {}", id);
-        return playlistRepository.findOneWithEagerRelationships(id).map(playlistMapper::toDto);
+        return Optional.of(playlistRepository.findOneWithEagerRelationships(id).get());
     }
 
     @Override
     public void delete(String id) {
         LOG.debug("Request to delete Playlist : {}", id);
         playlistRepository.deleteById(id);
+    }
+
+    @Override
+    public List<com.konsol.beatstream.service.api.dto.Playlist> getMyPlaylists() {
+        return playlistRepository
+            .findAllByOwnerId(userService.getCurrentUser().getId())
+            .stream()
+            .map(this::toPlayListDto)
+            .collect(Collectors.toList());
+    }
+
+    @Override
+    public com.konsol.beatstream.service.api.dto.Playlist createPlaylist(com.konsol.beatstream.service.api.dto.Playlist playlistDTO) {
+        return toPlayListDto(playlistRepository.save(toPlayListEntity(playlistDTO)));
+    }
+
+    @Override
+    public com.konsol.beatstream.service.api.dto.Playlist getPlaylist(String playlistId) {
+        return toPlayListDto(playlistRepository.findById(playlistId).get());
+    }
+
+    Playlist toPlayListEntity(com.konsol.beatstream.service.api.dto.Playlist playlist) {
+        Playlist playlistEntity = new Playlist();
+        playlistEntity.setId(playlist.getId());
+        playlistEntity.setTitle(playlist.getTitle());
+        playlistEntity.setDescription(playlist.getDesc());
+        playlistEntity.setOwnerId(userService.getCurrentUser().getId());
+
+        return playlistEntity;
+    }
+
+    com.konsol.beatstream.service.api.dto.Playlist toPlayListDto(Playlist playlist) {
+        com.konsol.beatstream.service.api.dto.Playlist playlistDTO = new com.konsol.beatstream.service.api.dto.Playlist();
+        playlistDTO.setId(playlist.getId());
+        playlistDTO.setTitle(playlist.getTitle());
+        playlistDTO.setDesc(playlist.getDescription());
+        playlistDTO.setTracks(playlist.getTracks().stream().map(trackMapper::TrackIntoTrackDTO).collect(Collectors.toList()));
+        return playlistDTO;
+    }
+
+    @Override
+    public void deleteAllPlaylist(String playlistId) {
+        playlistRepository.deleteById(playlistId);
     }
 }

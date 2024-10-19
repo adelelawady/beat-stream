@@ -31,6 +31,9 @@ public class BeatStreamFile implements Serializable {
     @Field("type")
     private String type;
 
+    @Field("fullPath")
+    private String fullPath;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here
 
     public String getId() {
@@ -127,5 +130,13 @@ public class BeatStreamFile implements Serializable {
             ", bucket='" + getBucket() + "'" +
             ", type='" + getType() + "'" +
             "}";
+    }
+
+    public String getFullPath() {
+        return fullPath;
+    }
+
+    public void setFullPath(String fullPath) {
+        this.fullPath = fullPath;
     }
 }

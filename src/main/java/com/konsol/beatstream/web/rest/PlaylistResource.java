@@ -159,19 +159,6 @@ public class PlaylistResource {
     }
 
     /**
-     * {@code GET  /playlists/:id} : get the "id" playlist.
-     *
-     * @param id the id of the playlistDTO to retrieve.
-     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the playlistDTO, or with status {@code 404 (Not Found)}.
-     */
-    @GetMapping("/{id}")
-    public ResponseEntity<PlaylistDTO> getPlaylist(@PathVariable("id") String id) {
-        LOG.debug("REST request to get Playlist : {}", id);
-        Optional<PlaylistDTO> playlistDTO = playlistService.findOne(id);
-        return ResponseUtil.wrapOrNotFound(playlistDTO);
-    }
-
-    /**
      * {@code DELETE  /playlists/:id} : delete the "id" playlist.
      *
      * @param id the id of the playlistDTO to delete.
