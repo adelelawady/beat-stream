@@ -378,6 +378,12 @@ body a:hover {
   flex-flow: row nowrap;
   align-items: center;
 }
+
+.navigation__list__item__selected {
+  color: white;
+  text-decoration: none;
+  border-right: 3px solid #1ed760;
+}
 .navigation__list__item:hover {
   color: white;
   text-decoration: none;
@@ -1374,4 +1380,44 @@ button:hover {
   letter-spacing: 1.25px;
   font-size: 13.2px;
   margin-bottom: 10px;
+}
+.modal {
+  display: flex;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5); /* Black with transparency */
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Set a width for the modal */
+  border-radius: 8px; /* Optional: add rounded corners */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+footer {
+  position: fixed !important;
+  width: 98% !important;
+  bottom: 6px !important;
 }

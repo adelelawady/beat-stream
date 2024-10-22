@@ -55,6 +55,12 @@ public class Track implements Serializable {
     @Field("playCount")
     private int playCount = 0;
 
+    @Field("refId")
+    private String refId;
+
+    @Field("refType")
+    private String refType;
+
     @Field("ownerId")
     private String ownerId;
 
@@ -241,5 +247,21 @@ public class Track implements Serializable {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public String getRefId() {
+        return refId;
+    }
+
+    public void setRefId(String refId) {
+        this.refId = refId;
+    }
+
+    public String getRefType() {
+        return refType;
+    }
+
+    public void setRefType(String refType) {
+        this.refType = refType;
     }
 }

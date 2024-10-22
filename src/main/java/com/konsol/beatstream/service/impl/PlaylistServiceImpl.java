@@ -1,13 +1,21 @@
 package com.konsol.beatstream.service.impl;
 
+import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
+
+import com.konsol.beatstream.domain.BeatStreamFile;
 import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.repository.PlaylistRepository;
+import com.konsol.beatstream.repository.TrackRepository;
+import com.konsol.beatstream.service.BeatStreamFileService;
 import com.konsol.beatstream.service.PlaylistService;
 import com.konsol.beatstream.service.TrackService;
 import com.konsol.beatstream.service.UserService;
+import com.konsol.beatstream.service.dto.BeatStreamFileDTO;
 import com.konsol.beatstream.service.dto.PlaylistDTO;
 import com.konsol.beatstream.service.mapper.PlaylistMapper;
 import com.konsol.beatstream.service.mapper.TrackMapper;
+import java.io.File;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,16 +42,24 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     private final TrackMapper trackMapper;
 
+    private final TrackRepository trackRepository;
+
+    private final BeatStreamFileService beatStreamFileService;
+
     public PlaylistServiceImpl(
         PlaylistRepository playlistRepository,
         PlaylistMapper playlistMapper,
         UserService userService,
-        TrackMapper trackMapper
+        TrackMapper trackMapper,
+        TrackRepository trackRepository,
+        BeatStreamFileService beatStreamFileService
     ) {
         this.playlistRepository = playlistRepository;
         this.playlistMapper = playlistMapper;
         this.userService = userService;
         this.trackMapper = trackMapper;
+        this.trackRepository = trackRepository;
+        this.beatStreamFileService = beatStreamFileService;
     }
 
     @Override
@@ -101,6 +117,27 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public void delete(String id) {
         LOG.debug("Request to delete Playlist : {}", id);
+
+        Optional<Playlist> playlist = playlistRepository.findById(id);
+        if (playlist.isEmpty()) {
+            return;
+        }
+
+        playlist
+            .get()
+            .getTracks()
+            .forEach(track -> {
+                Optional<BeatStreamFile> beatStreamFileDTO = beatStreamFileService.findOneDomain(track.getAudioFileId());
+
+                if (beatStreamFileDTO.isPresent()) {
+                    File file = new File(
+                        rootPath.resolve(playlist.get().getOwnerId() + "\\" + "audioFiles" + "\\" + track.getAudioFileId()).toUri()
+                    );
+                    file.delete();
+                    beatStreamFileService.delete(track.getAudioFileId());
+                }
+                trackRepository.deleteById(track.getId());
+            });
         playlistRepository.deleteById(id);
     }
 

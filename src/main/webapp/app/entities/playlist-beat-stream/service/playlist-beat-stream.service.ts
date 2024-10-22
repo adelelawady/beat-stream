@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -19,8 +21,26 @@ export class PlaylistBeatStreamService {
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/playlists');
 
+  protected resourceAPIUrl = this.applicationConfigService.getEndpointFor('api/playlist');
+
   create(playlist: NewPlaylistBeatStream): Observable<EntityResponseType> {
     return this.http.post<IPlaylistBeatStream>(this.resourceUrl, playlist, { observe: 'response' });
+  }
+
+  createPlayList(playlist: any): Observable<HttpResponse<any>> {
+    return this.http.post(this.resourceAPIUrl, playlist, { observe: 'response' });
+  }
+
+  getAllPlaylists(): Observable<HttpResponse<any>> {
+    return this.http.get(this.resourceAPIUrl, { observe: 'response' });
+  }
+
+  getPlaylist(id: string): Observable<HttpResponse<any>> {
+    return this.http.get(`${this.resourceAPIUrl}/${id}`, { observe: 'response' });
+  }
+
+  deletePlaylist(id: string): Observable<HttpResponse<any>> {
+    return this.http.delete(`${this.resourceAPIUrl}/${id}`, { observe: 'response' });
   }
 
   update(playlist: IPlaylistBeatStream): Observable<EntityResponseType> {

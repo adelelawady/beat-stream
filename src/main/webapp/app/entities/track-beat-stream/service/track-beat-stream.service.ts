@@ -1,3 +1,5 @@
+/* eslint-disable prettier/prettier */
+
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -14,10 +16,12 @@ export type EntityArrayResponseType = HttpResponse<ITrackBeatStream[]>;
 
 @Injectable({ providedIn: 'root' })
 export class TrackBeatStreamService {
+  public applicationConfigService = inject(ApplicationConfigService);
   protected http = inject(HttpClient);
-  protected applicationConfigService = inject(ApplicationConfigService);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/tracks');
+
+  protected resourceAPIUrl = this.applicationConfigService.getEndpointFor('api/audio');
 
   create(track: NewTrackBeatStream): Observable<EntityResponseType> {
     return this.http.post<ITrackBeatStream>(this.resourceUrl, track, { observe: 'response' });
@@ -25,6 +29,12 @@ export class TrackBeatStreamService {
 
   update(track: ITrackBeatStream): Observable<EntityResponseType> {
     return this.http.put<ITrackBeatStream>(`${this.resourceUrl}/${this.getTrackBeatStreamIdentifier(track)}`, track, {
+      observe: 'response',
+    });
+  }
+
+  uploadSongFile(trackUploadData: any): Observable<HttpResponse<object>> {
+    return this.http.post(`${this.resourceAPIUrl}/upload`, trackUploadData, {
       observe: 'response',
     });
   }

@@ -1,26 +1,34 @@
+/* eslint-disable prettier/prettier */
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-
+// prettier-ignore
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
+import { TrackBeatStreamService } from 'app/entities/track-beat-stream/service/track-beat-stream.service';
+import { PlaylistBeatStreamService } from 'app/entities/playlist-beat-stream/service/playlist-beat-stream.service';
+import { PlaylistComponentComponent } from 'app/playlist-component/playlist-component.component';
 // prettier-ignore
 @Component({
   standalone: true,
   selector: 'jhi-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  imports: [SharedModule, RouterModule],
+  imports: [PlaylistComponentComponent, SharedModule, RouterModule],
 })
 export default class HomeComponent implements OnInit, OnDestroy {
   showModal = false;  // Track whether the modal is visible
-  title = '';    
+  title = '';
   account = signal<Account | null>(null);
   isCollapsed = false;
+  playlists:any[]=[];
+  selectedPlaylist={};
   private readonly destroy$ = new Subject<void>();
 
+  private playlistBeatStreamService = inject(PlaylistBeatStreamService)
+  private trackService = inject(TrackBeatStreamService);
   private accountService = inject(AccountService);
   private router = inject(Router);
 
@@ -29,7 +37,9 @@ export default class HomeComponent implements OnInit, OnDestroy {
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntil(this.destroy$))
-      .subscribe(account => this.account.set(account));
+      .subscribe(account => {this.account.set(account); this.loadPlaylists();});
+
+
   }
   login(): void {
     this.router.navigate(['/login']);
@@ -48,10 +58,41 @@ export default class HomeComponent implements OnInit, OnDestroy {
     this.showModal = false;
   }
 
+  createPlaylist():void{
+
+
+    const createPlayListModel={
+      "title": this.title,
+      "desc": "description",
+    };
+
+    this.playlistBeatStreamService.createPlayList(createPlayListModel).subscribe(playlist=>{
+     // this.selectedPlaylist=playlist;
+      this.loadPlaylists();
+
+    });
+  }
+  uploadTrack():void{
+
+     // this.trackService.uploadTrack()
+
+      //uploadTrack
+  }
   // Method to handle submission
   submitTitle(): void {
-    //console.log('Title entered:', this.title);
+    this.createPlaylist();
     this.closeModal(); // Close the modal after submission
-    // You can add additional logic here (e.g., save the title)
+
+  }
+  loadPlaylists():void{
+    this.playlistBeatStreamService.getAllPlaylists().subscribe(playlists=>{
+      this.playlists=playlists.body;
+      if (this.playlists.length>0){
+
+
+          this.selectedPlaylist=this.playlists[0];
+
+      }
+    });
   }
 }

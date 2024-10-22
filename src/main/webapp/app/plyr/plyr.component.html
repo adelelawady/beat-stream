@@ -1,0 +1,31 @@
+<div class="audio-player">
+  <div class="track-info">
+    <img class="track-art" src="{{ currentTrack.artwork }}" alt="Track Art" />
+    <div class="track-details">
+      <span class="track-title" style="padding: 3px; padding-left: 13px !important">{{ currentTrack.title }}</span>
+      <span class="track-artist">{{ currentTrack.artist }}</span>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button>
+      <i class="ion-backward"></i>
+    </button>
+    <button (click)="togglePlayPause()">
+      <i class="ion-play" [ngClass]="isPlaying ? 'ion-pause' : 'ion-play'"></i>
+    </button>
+    <button>
+      <i class="ion-forward"></i>
+    </button>
+  </div>
+
+  <div class="progress-bar">
+    <input type="range" [value]="trackProgress" (input)="seekTrack($event)" />
+  </div>
+
+  <audio #audioPlayer (timeupdate)="onTimeUpdate($event)">
+    <source [src]="currentTrack.url" type="audio/mpeg" />
+  </audio>
+
+  <span class="track-artist p-3">{{ formatDuration(currentTrack.duration) }}</span>
+</div>

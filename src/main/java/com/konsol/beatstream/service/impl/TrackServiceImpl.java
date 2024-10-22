@@ -1,9 +1,12 @@
 package com.konsol.beatstream.service.impl;
 
+import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
+
 import com.konsol.beatstream.domain.BeatStreamFile;
 import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.domain.Track;
 import com.konsol.beatstream.domain.User;
+import com.konsol.beatstream.repository.BeatStreamFileRepository;
 import com.konsol.beatstream.repository.TrackRepository;
 import com.konsol.beatstream.service.BeatStreamFileService;
 import com.konsol.beatstream.service.PlaylistService;
@@ -15,10 +18,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -50,18 +54,22 @@ public class TrackServiceImpl implements TrackService {
 
     private final PlaylistService playlistService;
 
+    private final BeatStreamFileRepository beatStreamFileRepository;
+
     public TrackServiceImpl(
         TrackRepository trackRepository,
         TrackMapper trackMapper,
         BeatStreamFileService beatStreamFileService,
         UserService userService,
-        PlaylistService playlistService
+        PlaylistService playlistService,
+        BeatStreamFileRepository beatStreamFileRepository
     ) {
         this.trackRepository = trackRepository;
         this.trackMapper = trackMapper;
         this.beatStreamFileService = beatStreamFileService;
         this.userService = userService;
         this.playlistService = playlistService;
+        this.beatStreamFileRepository = beatStreamFileRepository;
     }
 
     @Override
@@ -108,7 +116,36 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
+    public Optional<Track> findOneDomain(String id) {
+        return trackRepository.findById(id);
+    }
+
+    @Override
     public void delete(String id) {
+        Track track = trackRepository.findById(id).orElse(null);
+
+        if (track == null) {
+            return;
+        }
+
+        //delete the file if available
+        if (track.getAudioFileId() != null && !Objects.equals(track.getAudioFileId(), "")) {
+            Optional<BeatStreamFile> beatStreamFileDTO = beatStreamFileService.findOneDomain(track.getAudioFileId());
+
+            if (beatStreamFileDTO.isPresent()) {
+                File file = new File(rootPath.resolve(track.getOwnerId() + "\\" + "audioFiles" + "\\" + track.getAudioFileId()).toUri());
+                file.delete();
+                beatStreamFileService.delete(track.getAudioFileId());
+
+                beatStreamFileService.delete(track.getAudioFileId());
+            }
+        }
+        //TODO delete image file
+
+        for (Playlist playlist : track.getPlaylists()) {
+            playlist.getTracks().remove(track);
+            playlistService.save(playlist);
+        }
         LOG.debug("Request to delete Track : {}", id);
         trackRepository.deleteById(id);
     }
@@ -228,7 +265,10 @@ public class TrackServiceImpl implements TrackService {
         User user = userService.getCurrentUser();
         BeatStreamFile beatStreamAudioFile = beatStreamFileService.uploadAudioFile(audioFile);
         Track track = extractTrackMetadata(audioFile);
-        track.title(name);
+        if (Objects.equals(track.getTitle(), "")) {
+            track.title(name);
+        }
+
         if (track.getPlaylists() == null) {
             track.setPlaylists(new LinkedHashSet<>());
         }
@@ -244,6 +284,79 @@ public class TrackServiceImpl implements TrackService {
         playlistService.save(playlist1);
 
         return this.trackRepository.save(track);
+    }
+
+    @Override
+    public Track createTrack(String refId, String refType, String playlistId) {
+        if (playlistId == null) {
+            throw new RuntimeException("Play list Not found");
+        }
+
+        Optional<Playlist> playlist = playlistService.findOneDomain(playlistId);
+
+        if (playlist.isEmpty()) {
+            throw new RuntimeException("Playlist Not found");
+        }
+
+        //  User user = userService.getCurrentUser();
+
+        Track track = new Track();
+
+        track.setRefId(refId);
+        track.setRefType(refType);
+
+        if (track.getPlaylists() == null) {
+            track.setPlaylists(new LinkedHashSet<>());
+        }
+        track.getPlaylists().add(playlist.get());
+        track.setOwnerId("user-1");
+
+        Playlist playlist1 = playlist.get();
+        playlist1.getTracks().add(track);
+        track.setTitle(refId);
+        track = this.trackRepository.save(track);
+        playlistService.save(playlist1);
+
+        return this.trackRepository.save(track);
+    }
+
+    @Override
+    public Track connectTrackToAudioFile(String trackId, String filePth) {
+        File file = new File(filePth);
+
+        if (file.exists()) {
+            Track track = trackRepository.findById(trackId).orElse(null);
+
+            if (track == null) {
+                throw new RuntimeException("track does not exist");
+            }
+            BeatStreamFile beatStreamFile = new BeatStreamFile();
+            //User user = userService.getCurrentUser();
+            Path bucketPath = rootPath.resolve("user-1" + "\\" + "audioFiles");
+            beatStreamFile.bucket("user-1" + "\\" + "audioFiles");
+            beatStreamFile.name(file.getName());
+            beatStreamFile.setSize(file.length());
+            beatStreamFile.setType("audio");
+
+            beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
+            beatStreamFile.setFullPath(bucketPath + "\\" + beatStreamFile.getId());
+
+            beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
+
+            Path source = Paths.get(filePth);
+            Path destination = Paths.get(bucketPath + "\\" + beatStreamFile.getId());
+
+            try {
+                Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            track.setAudioFileId(beatStreamFile.getId());
+            return trackRepository.save(track);
+        } else {
+            throw new RuntimeException("File does not exist");
+        }
     }
 
     @Override

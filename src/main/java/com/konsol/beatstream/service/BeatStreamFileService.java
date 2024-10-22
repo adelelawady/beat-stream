@@ -49,6 +49,8 @@ public interface BeatStreamFileService {
      */
     Optional<BeatStreamFileDTO> findOne(String id);
 
+    Optional<BeatStreamFile> findOneDomain(String id);
+
     /**
      * Delete the "id" beatStreamFile.
      *

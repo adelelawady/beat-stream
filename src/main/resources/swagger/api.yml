@@ -88,6 +88,54 @@ paths:
           description: OK
       tags:
         - playlist
+  '/track/play/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+    get:
+      summary: playTrack
+      tags:
+        - track
+      responses:
+        '206':
+          description: Partial Content
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+      operationId: playTrack
+      parameters:
+        - schema:
+            type: string
+          in: header
+          name: rangeHeader
+          description: rangeHeader
+  /audio/plugins/download:
+    get:
+      summary: Your GET endpoint
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: string
+      operationId: downloadAudio
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: refid
+        - schema:
+            type: string
+          in: query
+          name: refType
 components:
   responses:
     Problem:

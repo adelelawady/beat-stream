@@ -97,6 +97,11 @@ public class BeatStreamFileServiceImpl implements BeatStreamFileService {
     }
 
     @Override
+    public Optional<BeatStreamFile> findOneDomain(String id) {
+        return beatStreamFileRepository.findById(id);
+    }
+
+    @Override
     public void delete(String id) {
         LOG.debug("Request to delete BeatStreamFile : {}", id);
         beatStreamFileRepository.deleteById(id);

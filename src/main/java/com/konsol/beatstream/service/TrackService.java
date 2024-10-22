@@ -54,6 +54,7 @@ public interface TrackService {
      */
     Optional<TrackDTO> findOne(String id);
 
+    Optional<Track> findOneDomain(String id);
     /**
      * Delete the "id" track.
      *
@@ -68,5 +69,17 @@ public interface TrackService {
     Track extractTrackCover(MultipartFile file);
 
     Track createTrack(String name, MultipartFile audioFile, MultipartFile cover, String playlistId);
+
+    /**
+     * create using download method like download from youtube , soundcloud , spotify
+     * @param refId youtube , soundcloud , spotify id
+     * @param refType youtube , soundcloud , spotify name
+     * @param playlistId selected playlist
+     * @return track created
+     */
+    Track createTrack(String refId, String refType, String playlistId);
+
+    Track connectTrackToAudioFile(String trackId, String filePth);
+
     com.konsol.beatstream.service.api.dto.Track TrackIntoTrackDTO(com.konsol.beatstream.domain.Track track);
 }

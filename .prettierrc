@@ -1,4 +1,4 @@
-disabled: true
+endOfLine: "lf"
 printWidth: 140
 singleQuote: true
 tabWidth: 2
