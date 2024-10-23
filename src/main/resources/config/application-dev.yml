@@ -21,6 +21,8 @@ logging:
     com.konsol.beatstream: DEBUG
 
 spring:
+  jmx:
+    enabled: false
   servlet:
     multipart:
       max-file-size: 550MB
@@ -36,6 +38,7 @@ spring:
       indent-output: true
   data:
     mongodb:
+      database: beatStream
       uri: mongodb://localhost:27017/beatStream
   mail:
     host: localhost

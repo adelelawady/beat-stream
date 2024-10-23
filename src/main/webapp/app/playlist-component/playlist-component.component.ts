@@ -111,7 +111,6 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     // track.playCount++;
     this.audioService.setAudioSource(track);
     this.selectedTrack = track;
-    // this.audioService.setAudioSource("http://localhost:4200/api/track/play/67157ca05b57112d41f7e8d0");
   }
 
   playAnyTrack(): void {
@@ -120,7 +119,6 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
       const randomTrack = this.playlist.tracks[randomIndex];
       this.play(randomTrack);
     }
-    // this.audioService.setAudioSource("http://localhost:4200/api/track/play/67157ca05b57112d41f7e8d0");
   }
 
   onFileSelect(event: any): void {

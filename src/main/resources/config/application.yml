@@ -92,6 +92,10 @@ management:
 mongock:
   migration-scan-package:
     - com.konsol.beatstream.config.dbmigrations
+  mongo-db:
+    read-concern: local
+    write-concern:
+      journal: false
 
 spring:
   servlet:

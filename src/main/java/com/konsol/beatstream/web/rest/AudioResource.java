@@ -2,7 +2,6 @@ package com.konsol.beatstream.web.rest;
 
 import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.service.TrackService;
-import com.konsol.beatstream.service.api.dto.DownloadAudio200Response;
 import com.konsol.beatstream.service.api.dto.Status;
 import com.konsol.beatstream.service.api.dto.Track;
 import com.konsol.beatstream.service.audioPlugins.SoundCloud.SoundCloudDownloader;

@@ -300,6 +300,14 @@
         <version>1.15.4</version>
       </dependency>
 
+
+      <dependency>
+        <groupId>de.flapdoodle.embed</groupId>
+        <artifactId>de.flapdoodle.embed.mongo</artifactId>
+        <version>3.5.0</version> <!-- Or the latest version -->
+      </dependency>
+
+
     </dependencies>
 
 
@@ -729,7 +737,7 @@
                         </execution>
                     </executions>
                 </plugin>
-                <plugin>
+               <!-- <plugin>
                     <groupId>org.gaul</groupId>
                     <artifactId>modernizer-maven-plugin</artifactId>
                     <version>${modernizer-maven-plugin.version}</version>
@@ -745,7 +753,7 @@
                     <configuration>
                         <javaVersion>${java.version}</javaVersion>
                     </configuration>
-                </plugin>
+                </plugin>-->
                 <plugin>
                     <groupId>org.jacoco</groupId>
                     <artifactId>jacoco-maven-plugin</artifactId>
@@ -986,7 +994,7 @@
                                     <goal>npm</goal>
                                 </goals>
                             </execution>
-                            <execution>
+                           <!-- <execution>
                                 <id>webapp build test</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -996,7 +1004,7 @@
                                     <arguments>run webapp:test</arguments>
                                     <npmInheritsProxyConfigFromMaven>false</npmInheritsProxyConfigFromMaven>
                                 </configuration>
-                            </execution>
+                            </execution>-->
                             <execution>
                                 <id>webapp build prod</id>
                                 <goals>

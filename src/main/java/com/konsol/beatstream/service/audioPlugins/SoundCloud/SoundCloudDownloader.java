@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jaudiotagger.audio.AudioFile;
@@ -51,9 +52,11 @@ public class SoundCloudDownloader {
     @Autowired
     ReferanceDownloadTaskRepository referanceDownloadTaskRepository;
 
+    String startupPath = Paths.get("").toAbsolutePath().toString();
+
     // Path to the yt-dlp.exe file
-    private final String YTDLP_PATH = "C:\\Users\\adel\\KONSOL\\yt-dlp.exe";
-    private final String FFMPEG_PATH = "C:\\Users\\adel\\KONSOL\\ffmpeg.exe";
+    private final String YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
+    private final String FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
 
     // Method to download a song from SoundCloud using yt-dlp.exe
     public void downloadSong(String soundCloudUrl, Track track, String playList) throws IOException {

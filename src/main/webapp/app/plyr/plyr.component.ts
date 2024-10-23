@@ -59,7 +59,7 @@ export class PlyrMainComponent implements OnInit {
     this.audioService.audioSource$.subscribe(track => {
       if (track !== null && track !== 'PlayAny') {
         const audio: HTMLAudioElement = this.audioPlayer.nativeElement;
-        this.currentTrack.url = `http://localhost:4200/api/track/play/${track.id}`;
+        this.currentTrack.url = `http://localhost:8080/api/track/play/${track.id}`;
         this.currentTrack.duration = track.duration;
         this.currentTrack.artist = this.formatDuration(track.duration);
         this.isPlaying = true;

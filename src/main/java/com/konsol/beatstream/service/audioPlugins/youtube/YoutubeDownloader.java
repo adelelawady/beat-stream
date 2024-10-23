@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.audio.AudioHeader;
@@ -45,8 +46,11 @@ public class YoutubeDownloader {
     @Autowired
     ReferanceDownloadTaskRepository referanceDownloadTaskRepository;
 
-    private final String YTDLP_PATH = "C:\\Users\\adel\\KONSOL\\yt-dlp.exe";
-    private final String FFMPEG_PATH = "C:\\Users\\adel\\KONSOL\\ffmpeg.exe";
+    String startupPath = Paths.get("").toAbsolutePath().toString();
+
+    // Path to the yt-dlp.exe file
+    private final String YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
+    private final String FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
 
     public void AddYoutubeVideo(String video_Id, String playlistId) {
         this.videoId = video_Id;

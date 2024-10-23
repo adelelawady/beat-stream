@@ -28,7 +28,9 @@
     -->
 
     <logger name="com.konsol.beatstream" level="INFO"/>
-
+  <logger name="org.springframework.web.socket" level="OFF"/>
+  <logger name="org.springframework.web.socket.handler" level="OFF"/>
+  <logger name="org.springframework.messaging.simp" level="OFF"/>
     <logger name="angus.activation" level="WARN"/>
     <logger name="jakarta.activation" level="WARN"/>
     <logger name="jakarta.mail" level="WARN"/>

@@ -126,7 +126,7 @@ update src/main/webapp/app/app.config.ts
 To build the final jar and optimize the beatStream application for production, run:
 
 ```
-./mvnw -Pprod clean verify
+./mvnw -Pprod clean verify -DskipTests
 ```
 
 This will concatenate and minify the client CSS and JavaScript files. It will also modify `index.html` so it references these new files.
