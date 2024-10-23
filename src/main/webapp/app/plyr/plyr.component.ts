@@ -19,7 +19,7 @@ export class PlyrMainComponent implements OnInit {
   currentTrack = {
     title: 'Song Title',
     artist: 'Artist Name',
-    url: 'https://path/to/audio.mp3',
+    url: 'none',
     artwork: 'https://as2.ftcdn.net/v2/jpg/02/98/27/61/1000_F_298276112_Xa5xbk8UNgzNozC0n3itmPyQO2alNZnl.jpg',
     duration: 0,
   };
@@ -31,10 +31,14 @@ export class PlyrMainComponent implements OnInit {
     const audio: HTMLAudioElement = this.audioPlayer.nativeElement;
     if (this.isPlaying) {
       audio.pause();
+      this.isPlaying = false;
     } else {
+      if (this.currentTrack.url === 'none') {
+        this.audioService.setAudioSource('PlayAny');
+      }
       audio.play();
+      this.isPlaying = true;
     }
-    this.isPlaying = !this.isPlaying;
   }
 
   // Update progress bar while track is playing
@@ -53,12 +57,12 @@ export class PlyrMainComponent implements OnInit {
   ngOnInit(): void {
     // Initialize subscription to audio source
     this.audioService.audioSource$.subscribe(track => {
-      if (track !== null) {
+      if (track !== null && track !== 'PlayAny') {
         const audio: HTMLAudioElement = this.audioPlayer.nativeElement;
         this.currentTrack.url = `http://localhost:4200/api/track/play/${track.id}`;
         this.currentTrack.duration = track.duration;
         this.currentTrack.artist = this.formatDuration(track.duration);
-
+        this.isPlaying = true;
         this.currentTrack.title = track.title;
         audio.load();
         audio.play();

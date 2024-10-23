@@ -1,0 +1,56 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (referanceDownloadTask(); as referanceDownloadTaskRef) {
+      <div>
+        <h2 data-cy="referanceDownloadTaskDetailsHeading">
+          <span jhiTranslate="beatStreamApp.referanceDownloadTask.detail.title">Referance Download Task</span>
+        </h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.referanceDownloadTask.referanceId">Referance Id</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.referanceId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.referanceDownloadTask.referanceType">Referance Type</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.referanceType }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.referanceDownloadTask.referanceTrackId">Referance Track Id</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.referanceTrackId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.referanceDownloadTask.referanceStatus">Referance Status</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.referanceStatus }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.referanceDownloadTask.referanceScheduleDate">Referance Schedule Date</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.referanceScheduleDate | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.referanceDownloadTask.referanceLog">Referance Log</span></dt>
+          <dd>
+            <span>{{ referanceDownloadTaskRef.referanceLog }}</span>
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/referance-download-task', referanceDownloadTaskRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

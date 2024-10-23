@@ -1,0 +1,37 @@
+{
+  "annotations": {
+    "changelogDate": "20241022195151"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "referanceId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "referanceType",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "referanceTrackId",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "referanceStatus",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "referanceScheduleDate",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "referanceLog",
+      "fieldType": "String"
+    }
+  ],
+  "name": "ReferanceDownloadTask",
+  "pagination": "pagination",
+  "relationships": [],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

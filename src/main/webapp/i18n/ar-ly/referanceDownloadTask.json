@@ -1,0 +1,29 @@
+{
+  "beatStreamApp": {
+    "referanceDownloadTask": {
+      "home": {
+        "title": "Referance Download Tasks",
+        "refreshListLabel": "تحديث القائمة",
+        "createLabel": "إنشاء Referance Download Task جديد",
+        "createOrEditLabel": "إنشاء أو تعديل Referance Download Task",
+        "notFound": "لم يتم العثور على Referance Download Tasks"
+      },
+      "created": "Referance Download Task جديد تم إنشاؤه بالمعرف {{ param }}",
+      "updated": "Referance Download Task تم تحديثه بالمعرف {{ param }}",
+      "deleted": "Referance Download Task تم حذفه بالمعرف {{ param }}",
+      "delete": {
+        "question": "هل أنت متأكد أنك تريد حذف Referance Download Task {{ id }}؟"
+      },
+      "detail": {
+        "title": "Referance Download Task"
+      },
+      "id": "ID",
+      "referanceId": "Referance Id",
+      "referanceType": "Referance Type",
+      "referanceTrackId": "Referance Track Id",
+      "referanceStatus": "Referance Status",
+      "referanceScheduleDate": "Referance Schedule Date",
+      "referanceLog": "Referance Log"
+    }
+  }
+}

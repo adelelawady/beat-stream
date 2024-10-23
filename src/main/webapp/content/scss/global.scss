@@ -701,8 +701,8 @@ body a:hover {
   width: 100%;
   height: 100%;
   z-index: 0;
-  opacity: 0.15;
-  background-image: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/7022/g-eazy.png);
+  opacity: 0.5;
+  background-image: url(content/images/playlistBackGround.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: top;
@@ -1420,4 +1420,8 @@ footer {
   position: fixed !important;
   width: 98% !important;
   bottom: 6px !important;
+}
+
+.track-details {
+  margin-left: 20px !important;
 }

@@ -34,7 +34,12 @@ public interface TrackMapper extends EntityMapper<TrackDTO, Track> {
         track1.setId(track.getId());
         track1.title(track.getTitle());
         track1.playCount(BigDecimal.valueOf(track.getPlayCount()));
-        track1.duration(new BigDecimal(track.getDuration()));
+        try {
+            track1.duration(new BigDecimal(track.getDuration()));
+        } catch (Exception e) {
+            track1.duration(new BigDecimal(0));
+        }
+
         track1.setPlaylists(track.getPlaylists().stream().map(Playlist::getId).toList());
 
         return track1;

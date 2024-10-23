@@ -124,7 +124,7 @@ paths:
           content:
             application/json:
               schema:
-                type: string
+                $ref: '#/components/schemas/Status'
       operationId: downloadAudio
       description: ''
       parameters:
@@ -132,10 +132,17 @@ paths:
             type: string
           in: query
           name: refid
+          required: true
         - schema:
             type: string
           in: query
           name: refType
+          required: true
+        - schema:
+            type: string
+          in: query
+          name: playlistId
+          required: true
 components:
   responses:
     Problem:
@@ -269,6 +276,16 @@ components:
             id: bx67u4ruppnj7
           items:
             $ref: '#/components/schemas/Track'
+    Status:
+      title: Status
+      x-stoplight:
+        id: vfbw2e2tweage
+      type: object
+      properties:
+        status:
+          type: string
+          x-stoplight:
+            id: jcyhyzh94h5i1
 security:
   - jwt: []
   - basic: []

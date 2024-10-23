@@ -35,6 +35,37 @@
   </div>
 </div>
 
+<!-- Modal -->
+<div class="modal" *ngIf="showYoutubeDownloadModal">
+  <div class="modal-content">
+    <div class="container">
+      <div class="status" [ngStyle]="{ color: currentColor }">
+        {{ currentStatus }}
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div class="modal" *ngIf="showConfirmation">
+  <div class="modal-content">
+    <h3>Are you sure you want to delete?</h3>
+    <p>This action cannot be undone.</p>
+    <button (click)="confirmDelete()">Yes, Delete</button>
+    <button (click)="closeDeleteConfirmation()">Cancel</button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="showYoutubeModal">
+  <div class="modal-content">
+    <span class="close" (click)="closeYoutubeModal()">&times;</span>
+    <h2>youtube/soundcloud url</h2>
+    <input type="text" [(ngModel)]="youtubeVideoUrl" placeholder="Enter youtube video url here" />
+    <br />
+    <button (click)="submitYouTubeVideoUrl()">Download</button>
+  </div>
+</div>
+
 <div class="content__middle">
   <div class="artist is-verified">
     <div class="artist__header">
@@ -50,19 +81,25 @@
               Play
             </button>
 
-            <button (click)="deletePlaylist(playlist.id)" class="button-danger">delete playlist</button>
+            <button (click)="openDeleteConfirmation()" style="background-color: var(--bs-red)" class="button-danger">
+              delete playlist
+            </button>
 
             <button (click)="openUploadAudioModal()" class="button-light">Upload</button>
 
-            <button class="button-light more">
+            <button (click)="openYoutubeModal()" class="button-light">Add Youtube/soundcloud</button>
+
+            <!--
+            <button  class="button-light more">
               <i class="ion-ios-more"></i>
             </button>
+            -->
           </div>
         </div>
       </div>
 
       <div class="artist__listeners">
-        <div class="artist__listeners__count">15,662,810</div>
+        <div class="artist__listeners__count">{{ getTotalPlayCount(playlist) }}</div>
 
         <div class="artist__listeners__label">Total Listens</div>
       </div>
@@ -146,7 +183,7 @@
                       </div>
 
                       <div class="tracks__heading__popularity">
-                        <i class="ion-thumbsup"></i>
+                        <i class="ion-play"></i>
                       </div>
                     </div>
 
@@ -154,19 +191,24 @@
                       <div class="track__number">{{ track.id | slice: 5 : 8 }}</div>
 
                       <div class="track__added">
-                        <i class="ion-checkmark-round added"></i>
+                        <i [ngClass]="track === selectedTrack ? 'display-none' : ''" class="ion-checkmark-round added"></i>
+
+                        <i [ngClass]="track !== selectedTrack ? 'display-none' : ''" class="ion-play added"></i>
                       </div>
 
-                      <div class="track__title">{{ track.title }}</div>
+                      <div class="track__title" style="{{ 'color:' + (track === selectedTrack ? 'burlywood' : 'white') }}">
+                        {{ track.title }}
+                      </div>
 
+                      <!--
                       <div class="track__explicit">
                         <span class="label">Explicit</span>
                       </div>
-
+-->
                       <div class="track__length">{{ formatDuration(track.duration) }}</div>
 
                       <div class="track__popularity">
-                        <i class="ion-arrow-graph-up-right"></i>
+                        <span>{{ track.playCount }}</span>
                       </div>
                     </div>
                   </div>

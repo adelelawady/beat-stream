@@ -2,7 +2,6 @@ package com.konsol.beatstream.service;
 
 import com.konsol.beatstream.domain.BeatStreamFile;
 import com.konsol.beatstream.domain.Track;
-import com.konsol.beatstream.service.api.dto.AudioUpload;
 import com.konsol.beatstream.service.dto.TrackDTO;
 import java.util.Optional;
 import org.springframework.core.io.Resource;

@@ -2,8 +2,7 @@
   <div class="container-fluid">
     <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
       <span class="logo-img"></span>
-      <span class="navbar-title" jhiTranslate="global.title">BeatStream</span>
-      <span class="navbar-version">{{ version }}</span>
+      <span class="navbar-title" jhiTranslate="global.title">Beat-Stream</span>
     </a>
     <a
       class="navbar-toggler d-lg-none"
@@ -28,11 +27,11 @@
           </a>
         </li>
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
-        @if (account() !== null) {
+        @if (false) {
           <li
             ngbDropdown
             class="nav-item dropdown pointer"
-            display="dynamic"
+            display="none"
             routerLinkActive="active"
             [routerLinkActiveOptions]="{ exact: true }"
           >
@@ -127,11 +126,24 @@
                   <span jhiTranslate="global.menu.entities.trackBeatStream">Track</span>
                 </a>
               </li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/referance-download-task"
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{ exact: true }"
+                  (click)="collapseNavbar()"
+                >
+                  <fa-icon icon="asterisk" [fixedWidth]="true"></fa-icon>
+                  <span jhiTranslate="global.menu.entities.referanceDownloadTask">Referance Download Task</span>
+                </a>
+              </li>
               <!-- jhipster-needle-add-entity-to-menu - JHipster will add entities to the menu here -->
             </ul>
           </li>
         }
         <li
+          style="display: none"
           *jhiHasAnyAuthority="'ROLE_ADMIN'"
           ngbDropdown
           class="nav-item dropdown pointer"

@@ -8,13 +8,7 @@
       "entities": {
         "main": "الكيانات",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
-        "albumBeatStream": "Album",
-        "artistBeatStream": "Artist",
-        "beatStreamFileBeatStream": "Beat Stream File",
-        "genreBeatStream": "Genre",
-        "listeningHistoryBeatStream": "Listening History",
-        "playlistBeatStream": "Playlist",
-        "trackBeatStream": "Track"
+        "referanceDownloadTask": "Referance Download Task"
       },
       "account": {
         "main": "الحساب",

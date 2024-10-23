@@ -39,6 +39,12 @@ export class TrackBeatStreamService {
     });
   }
 
+  downloadYoutubeVideo(videoId: string, videoType: string, playlistId: string): Observable<HttpResponse<object>> {
+    return this.http.get(`${this.resourceAPIUrl}/plugins/download?refid=${videoId}&refType=${videoType}&playlistId=${playlistId}`, {
+      observe: 'response',
+    });
+  }
+
   partialUpdate(track: PartialUpdateTrackBeatStream): Observable<EntityResponseType> {
     return this.http.patch<ITrackBeatStream>(`${this.resourceUrl}/${this.getTrackBeatStreamIdentifier(track)}`, track, {
       observe: 'response',

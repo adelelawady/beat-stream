@@ -298,7 +298,7 @@ public class TrackServiceImpl implements TrackService {
             throw new RuntimeException("Playlist Not found");
         }
 
-        //  User user = userService.getCurrentUser();
+        User user = userService.getCurrentUser();
 
         Track track = new Track();
 
@@ -309,7 +309,7 @@ public class TrackServiceImpl implements TrackService {
             track.setPlaylists(new LinkedHashSet<>());
         }
         track.getPlaylists().add(playlist.get());
-        track.setOwnerId("user-1");
+        track.setOwnerId(user.getId());
 
         Playlist playlist1 = playlist.get();
         playlist1.getTracks().add(track);
@@ -331,9 +331,9 @@ public class TrackServiceImpl implements TrackService {
                 throw new RuntimeException("track does not exist");
             }
             BeatStreamFile beatStreamFile = new BeatStreamFile();
-            //User user = userService.getCurrentUser();
-            Path bucketPath = rootPath.resolve("user-1" + "\\" + "audioFiles");
-            beatStreamFile.bucket("user-1" + "\\" + "audioFiles");
+            User user = userService.getCurrentUser();
+            Path bucketPath = rootPath.resolve(user.getId() + "\\" + "audioFiles");
+            beatStreamFile.bucket(user.getId() + "\\" + "audioFiles");
             beatStreamFile.name(file.getName());
             beatStreamFile.setSize(file.length());
             beatStreamFile.setType("audio");

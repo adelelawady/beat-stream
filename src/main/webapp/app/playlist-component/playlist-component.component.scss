@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Full viewport height */
+}
+
+.status {
+  font-size: 24px; /* Increase font size */
+  font-weight: bold;
+}
+.display-none {
+  display: none;
+}

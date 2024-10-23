@@ -2,9 +2,14 @@ package com.konsol.beatstream.service.audioPlugins.youtube;
 
 import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
 
+import com.konsol.beatstream.domain.ReferanceDownloadTask;
 import com.konsol.beatstream.domain.Track;
+import com.konsol.beatstream.domain.User;
+import com.konsol.beatstream.repository.ReferanceDownloadTaskRepository;
 import com.konsol.beatstream.repository.TrackRepository;
 import com.konsol.beatstream.service.TrackService;
+import com.konsol.beatstream.service.UserService;
+import com.konsol.beatstream.service.audioPlugins.ReferanceTrack.ReferanceTrackHandler;
 import com.konsol.beatstream.service.bucket.BucketManager;
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,15 +33,31 @@ public class YoutubeDownloader {
     @Autowired
     TrackRepository trackRepository;
 
-    String videoId = "9OSVh-4Jovc";
+    @Autowired
+    ReferanceTrackHandler referanceTrackHandler;
 
-    public void AddYoutubeVideo(String video_Id) {
+    String videoId = "9OSVh-4Jovc";
+    ReferanceDownloadTask referanceDownloadTask;
+
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    ReferanceDownloadTaskRepository referanceDownloadTaskRepository;
+
+    private final String YTDLP_PATH = "C:\\Users\\adel\\KONSOL\\yt-dlp.exe";
+    private final String FFMPEG_PATH = "C:\\Users\\adel\\KONSOL\\ffmpeg.exe";
+
+    public void AddYoutubeVideo(String video_Id, String playlistId) {
         this.videoId = video_Id;
 
+        User user = userService.getCurrentUser();
         BucketManager manager = new BucketManager();
 
         try {
             manager.createBucket("youTubeDL");
+            manager.createBucket(user.getId());
+            manager.createBucket(user.getId() + "\\" + "audioFiles");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -48,10 +69,13 @@ public class YoutubeDownloader {
             throw new RuntimeException("Invalid YouTube Video URL: " + videoUrl);
         }
 
-        if (trackRepository.findByRefIdAndRefType(videoId, "YOUTUBE").isPresent()) {
+        if (trackRepository.findByRefIdAndRefTypeAndOwnerId(videoId, "YOUTUBE", user.getId()).isPresent()) {
             throw new RuntimeException("YouTube Video already exists: " + videoId);
         }
-        Track track = trackService.createTrack(videoId, "YOUTUBE", "6717f4a4d5f6fa151e9fd8af");
+
+        Track track = trackService.createTrack(videoId, "YOUTUBE", playlistId);
+
+        referanceDownloadTask = referanceTrackHandler.createDownloadTask(video_Id, "YOUTUBE", track.getId());
 
         try {
             downloadYouTubeVideoAsMP3(videoUrl, outputPath, track);
@@ -59,9 +83,6 @@ public class YoutubeDownloader {
             trackService.delete(track.getId());
         }
     }
-
-    private final String YTDLP_PATH = "C:\\Users\\adel\\KONSOL\\yt-dlp.exe";
-    private final String FFMPEG_PATH = "C:\\Users\\adel\\KONSOL\\ffmpeg.exe";
 
     public void downloadYouTubeVideoAsMP3(String videoUrl, String outputPath, Track track) throws IOException, InterruptedException {
         // Prepare the yt-dlp command
@@ -72,12 +93,17 @@ public class YoutubeDownloader {
         processBuilder.redirectErrorStream(true);
 
         Process process = processBuilder.start();
-
+        referanceDownloadTask.setReferanceStatus("ProcessStarted");
+        referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
         // Capture the process output
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
+            referanceDownloadTask.setReferanceStatus("Downloading");
+            referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
+                referanceDownloadTask.setReferanceLog(referanceDownloadTask.getReferanceLog() + "\n" + line);
+                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
             }
         }
 
@@ -85,16 +111,24 @@ public class YoutubeDownloader {
         int exitCode = process.waitFor();
         if (exitCode == 0) {
             try {
+                referanceDownloadTask.setReferanceStatus("ExtractingAudio");
+                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
                 Path youtubeDownloadDirPath = rootPath.resolve("youTubeDL");
                 String outputPathString = youtubeDownloadDirPath + "\\" + videoId + "\\" + videoId + ".mp3";
                 Path outputPath1 = Path.of(outputPathString);
+                referanceDownloadTask.setReferanceStatus("SavingFile");
+                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
                 Track track1 = extrackAndSaveTrackData(track, outputPath1, videoUrl);
                 moveAndConnectDownloadedFile(track1, outputPath1);
                 File file = new File(outputPath);
                 file.delete();
+                referanceDownloadTask.setReferanceStatus("AddingAudioToPlayList");
+                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
             } catch (Exception e) {
                 trackService.delete(track.getId());
             }
+            referanceDownloadTask.setReferanceStatus("DownloadComplete");
+            referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
             System.out.println("Download complete!");
         } else {
             System.err.println("Download failed. Exit code: " + exitCode);

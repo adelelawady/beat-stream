@@ -4,6 +4,7 @@ import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
 
 import com.konsol.beatstream.domain.BeatStreamFile;
 import com.konsol.beatstream.domain.Track;
+import com.konsol.beatstream.repository.TrackRepository;
 import com.konsol.beatstream.service.BeatStreamFileService;
 import com.konsol.beatstream.service.TrackService;
 import com.konsol.beatstream.web.api.TrackApiDelegate;
@@ -34,6 +35,9 @@ public class TrackApiResource implements TrackApiDelegate {
     @Autowired
     BeatStreamFileService beatStreamFileService;
 
+    @Autowired
+    private TrackRepository trackRepository;
+
     @Override
     public ResponseEntity<Resource> playTrack(String id, String rangeHeader) {
         Optional<Track> track = trackService.findOneDomain(id);
@@ -41,6 +45,10 @@ public class TrackApiResource implements TrackApiDelegate {
         if (track.isEmpty()) {
             return ResponseEntity.ok().build();
         }
+
+        Track trackCountUpdate = track.get();
+        trackCountUpdate.setPlayCount(trackCountUpdate.getPlayCount() + 1);
+        trackRepository.save(trackCountUpdate);
 
         Optional<BeatStreamFile> beatStreamFile = beatStreamFileService.findOneDomain(track.get().getAudioFileId());
 

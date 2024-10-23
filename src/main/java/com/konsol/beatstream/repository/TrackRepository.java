@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TrackRepository extends MongoRepository<Track, String> {
-    Optional<Track> findByRefIdAndRefType(String id, String refType);
+    Optional<Track> findByRefIdAndRefTypeAndOwnerId(String id, String refType, String OwnerId);
 }

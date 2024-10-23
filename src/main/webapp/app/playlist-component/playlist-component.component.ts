@@ -1,28 +1,68 @@
 /* eslint-disable prettier/prettier */
 /* eslint-disable */
 
-import { AfterViewInit, Component, ElementRef, inject, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PlaylistBeatStreamService } from 'app/entities/playlist-beat-stream/service/playlist-beat-stream.service';
 import { HttpClient } from '@angular/common/http';
 import { TrackBeatStreamService } from 'app/entities/track-beat-stream/service/track-beat-stream.service';
 import { CommonModule } from '@angular/common';
-import { PlyrComponent, PlyrModule } from 'ngx-plyr';
 import FooterComponent from 'app/layouts/footer/footer.component';
 import { AudioService } from 'app/shared/service/audio.service';
-import { NgxFileDropModule } from 'ngx-file-drop';
-import { NgxFileDropEntry, FileSystemFileEntry, FileSystemDirectoryEntry } from 'ngx-file-drop';
+import { FileSystemDirectoryEntry, FileSystemFileEntry, NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { timer } from 'rxjs';
 
 @Component({
   selector: 'jhi-playlist-component',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, NgxFileDropModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    NgxFileDropModule,
+    FormsModule, // Add FormsModule here
+  ],
   templateUrl: './playlist-component.component.html',
   styleUrl: './playlist-component.component.scss',
 })
-export class PlaylistComponentComponent implements OnChanges {
+export class PlaylistComponentComponent implements OnChanges, OnInit {
   showModal = false; // Track whether the modal is visible
+  showYoutubeModal = false;
+  showYoutubeDownloadModal = false;
+  showConfirmation = false;
+  enableStatus = true;
+  selectedTrack: any;
+  statusList: string[] = [
+    'Initializing download...',
+    'Connecting to server...',
+    'Downloading file...',
+    'Download in progress...',
+    'Halfway there...',
+    'Almost done...',
+    'Finalizing download...',
+    'Verifying file integrity...',
+    'Extracting files...',
+    'Saving data...',
+    'Cleaning up...',
+    'Setting up...',
+    'Updating configurations...',
+    'Preparing for launch...',
+    'Launching application...',
+    'Download completed successfully!',
+    'Download failed, retrying...',
+    'Retrying download...',
+    'Error encountered, please check your connection.',
+    'Download paused, resuming...',
+    'Download canceled.',
+    'Checking for updates...',
+    'Update found, downloading...',
+    'Re-downloading...',
+    'Please wait while we finalize your download...',
+  ];
+  currentStatus: string = '';
+  currentColor: string = '';
+  index: number = 0;
+  intervalId: any;
+  youtubeVideoUrl = '';
   @ViewChild(FooterComponent) PlayerComponent!: FooterComponent;
   @Input() playlist: any;
   trackBeatStreamService = inject(TrackBeatStreamService);
@@ -51,16 +91,26 @@ export class PlaylistComponentComponent implements OnChanges {
     });
   }
 
+  ngOnInit(): void {
+    this.audioService.audioSource$.subscribe(track => {
+      if (track !== null && track === 'PlayAny') {
+        this.playAnyTrack();
+      }
+    });
+  }
   ngOnChanges(changes: SimpleChanges): void {
     const currentValue = changes['playlist'].currentValue;
     if (currentValue[0]) {
       this.loadPlaylist(currentValue[0].id);
     }
   }
-
+  getTotalPlayCount(playlist: any): number {
+    return playlist.tracks.reduce((sum: any, track: { playCount: any }) => sum + track.playCount, 0);
+  }
   play(track: any): void {
+    // track.playCount++;
     this.audioService.setAudioSource(track);
-
+    this.selectedTrack = track;
     // this.audioService.setAudioSource("http://localhost:4200/api/track/play/67157ca05b57112d41f7e8d0");
   }
 
@@ -72,6 +122,7 @@ export class PlaylistComponentComponent implements OnChanges {
     }
     // this.audioService.setAudioSource("http://localhost:4200/api/track/play/67157ca05b57112d41f7e8d0");
   }
+
   onFileSelect(event: any): void {
     const file = event.target.files[0];
     if (file) {
@@ -84,6 +135,14 @@ export class PlaylistComponentComponent implements OnChanges {
   // Method to open the modal
   openUploadAudioModal(): void {
     this.showModal = true;
+  }
+
+  openYoutubeModal(): void {
+    this.showYoutubeModal = true;
+  }
+
+  closeYoutubeModal(): void {
+    this.showYoutubeModal = false;
   }
 
   // Method to close the modal
@@ -99,6 +158,7 @@ export class PlaylistComponentComponent implements OnChanges {
 
   deletePlaylist(id: string): void {
     this.playlistBeatStreamService.deletePlaylist(id).subscribe(newPlaylist => {
+      this.showConfirmation = false;
       window.location.reload();
     });
   }
@@ -218,5 +278,95 @@ export class PlaylistComponentComponent implements OnChanges {
     const formattedSeconds = remainingSeconds < 10 ? `0${remainingSeconds}` : remainingSeconds;
 
     return `${minutes}:${formattedSeconds}`;
+  }
+
+  extractYouTubeVideoId(url: string): string | null {
+    const regExp = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const match = url.match(regExp);
+    return match ? match[1] : null;
+  }
+
+  submitYouTubeVideoUrl(): void {
+    if (!this.youtubeVideoUrl) {
+      return;
+    }
+    const videoType = this.isYouTubeOrSoundCloud(this.youtubeVideoUrl);
+    let videoId;
+    if (videoType === 'YouTube') {
+      videoId = this.extractYouTubeVideoId(this.youtubeVideoUrl);
+    }
+    if (videoType === 'SoundCloud') {
+      videoId = encodeURIComponent(this.youtubeVideoUrl);
+    }
+
+    if (videoId) {
+      // encodeURIComponent(url);
+
+      this.showYoutubeDownloadModal = true;
+      this.startSimulation();
+      this.trackBeatStreamService.downloadYoutubeVideo(videoId, videoType, this.playlist.id).subscribe((videoId: any) => {
+        this.enableStatus = false;
+        this.currentStatus = videoId.body.status;
+        this.loadPlaylist(this.playlist.id);
+        this.intervalId = setInterval(() => {
+          this.showYoutubeDownloadModal = false;
+          this.index = 0;
+          this.currentStatus = '';
+        }, 6000);
+      });
+      this.closeYoutubeModal();
+      //
+    }
+  }
+  isYouTubeOrSoundCloud(url: string): string {
+    const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
+    const soundcloudRegex = /^(https?:\/\/)?(www\.)?soundcloud\.com\/.+$/;
+
+    if (youtubeRegex.test(url)) {
+      return 'YouTube';
+    } else if (soundcloudRegex.test(url)) {
+      return 'SoundCloud';
+    } else {
+      return 'Invalid URL';
+    }
+  }
+
+  startSimulation(): void {
+    this.currentStatus = this.statusList[this.index];
+    this.currentColor = this.getColor(this.index);
+    this.enableStatus = true;
+    this.intervalId = setInterval(() => {
+      if (!this.enableStatus) {
+        return;
+      }
+      this.index = (this.index + 1) % this.statusList.length;
+      this.currentStatus = this.statusList[this.index];
+      this.currentColor = this.getColor(this.index);
+
+      // Stop simulation when the last status is shown
+      if (this.index === this.statusList.length - 1) {
+        clearInterval(this.intervalId);
+      }
+    }, 3000); // Change text every second
+  }
+
+  getColor(index: number): string {
+    const colors = ['#3498db', '#e67e22', '#2ecc71', '#9b59b6', '#f1c40f'];
+    return colors[index];
+  }
+
+  openDeleteConfirmation() {
+    this.showConfirmation = true;
+  }
+
+  // Confirm delete action
+  confirmDelete() {
+    // Perform the delete action here
+    this.deletePlaylist(this.playlist.id);
+  }
+
+  // Close the confirmation popup
+  closeDeleteConfirmation() {
+    this.showConfirmation = false;
   }
 }
