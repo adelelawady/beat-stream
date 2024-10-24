@@ -7,6 +7,18 @@
 Bootstrap tweaks
 ===============================================================*/
 
+@font-face {
+  font-family: 'Roboto';
+  src: url('/content/fonts/Roboto-Regular.ttf') format('truetype'); /* Path to your local font files */
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Roboto';
+  src: url('/content/fonts/Roboto-Bold.ttf') format('truetype');
+  font-weight: 700;
+}
+
 body,
 h1,
 h2,
@@ -702,7 +714,7 @@ body a:hover {
   height: 100%;
   z-index: 0;
   opacity: 0.5;
-  background-image: url(//content/images/playlistBackGround.jpg);
+  background-image: url(/content/images/playlistBackGround.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: top;

@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -76,7 +75,7 @@ export default class HomeComponent implements OnInit, OnDestroy {
 
      // this.trackService.uploadTrack()
 
-      //uploadTrack
+      // uploadTrack
   }
   // Method to handle submission
   submitTitle(): void {

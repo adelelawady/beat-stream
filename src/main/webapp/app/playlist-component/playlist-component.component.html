@@ -4,12 +4,7 @@
     <span class="close" (click)="onCancel()">&times;</span>
     <h2>Drop Audio Files To Upload It</h2>
     <div class="center">
-      <ngx-file-drop
-        dropZoneLabel="Drop files here"
-        (onFileDrop)="dropped($event)"
-        (onFileOver)="fileOver($event)"
-        (onFileLeave)="fileLeave($event)"
-      >
+      <ngx-file-drop dropZoneLabel="Drop files here" (onFileDrop)="dropped($event)">
         <ng-template ngx-file-drop-content-tmp let-openFileSelector="openFileSelector">
           Optional custom content that replaces the the entire default content.
           <button type="button" (click)="openFileSelector()">Browse Files</button>
@@ -115,7 +110,7 @@
           </li>-->
         </ul>
 
-        <div class="artist__navigation__friends">
+        <!-- <div class="artist__navigation__friends">
           <a style="display: none" href="#">
             <img src="http://zblogged.com/wp-content/uploads/2015/11/17.jpg" alt="" />
           </a>
@@ -127,7 +122,7 @@
           <a style="display: none" href="#">
             <img src="http://cdn.devilsworkshop.org/files/2013/01/enlarged-facebook-profile-picture.jpg" alt="" />
           </a>
-        </div>
+        </div>-->
       </div>
     </div>
 

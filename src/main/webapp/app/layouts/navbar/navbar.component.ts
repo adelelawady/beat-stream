@@ -44,10 +44,6 @@ export default class NavbarComponent implements OnInit {
 
   ngOnInit(): void {
     this.entitiesNavbarItems = EntityNavbarItems;
-    this.profileService.getProfileInfo().subscribe(profileInfo => {
-      this.inProduction = profileInfo.inProduction;
-      this.openAPIEnabled = profileInfo.openAPIEnabled;
-    });
   }
 
   changeLanguage(languageKey: string): void {

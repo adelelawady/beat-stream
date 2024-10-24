@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { CommonModule } from '@angular/common';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -47,8 +46,10 @@ export class PlyrMainComponent implements OnInit {
     this.trackProgress = (audio.currentTime / audio.duration) * 100;
   }
 
-  // Seek track position
   seekTrack(event: any): void {
+    if (!event) {
+      return;
+    }
     const audio: HTMLAudioElement = this.audioPlayer.nativeElement;
     const seekValue = event.target.value;
     audio.currentTime = (seekValue / 100) * audio.duration;

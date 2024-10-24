@@ -1,5 +1,4 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable */
 
 import { Component, inject, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -58,9 +57,9 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     'Re-downloading...',
     'Please wait while we finalize your download...',
   ];
-  currentStatus: string = '';
-  currentColor: string = '';
-  index: number = 0;
+  currentStatus = '';
+  currentColor = '';
+  index = 0;
   intervalId: any;
   youtubeVideoUrl = '';
   @ViewChild(FooterComponent) PlayerComponent!: FooterComponent;
@@ -70,15 +69,13 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   resourceAPIUrl = this.trackBeatStreamService.applicationConfigService.getEndpointFor('api/audio');
 
   files: any[] = [];
-  fileUploadProgress: { [key: string]: number } = {}; // To track progress for each file
-  uploadFinished: boolean = false;
-  isUploading: boolean = false;
-  uploadInProgress: boolean = false;
+
+  fileUploadProgress: Record<string, number> = {};
+  uploadFinished = false;
+  isUploading = false;
+  uploadInProgress = false;
 
   playlistBeatStreamService = inject(PlaylistBeatStreamService);
-
-  // @ts-ignore
-  public files: NgxFileDropEntry[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -104,8 +101,13 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
       this.loadPlaylist(currentValue[0].id);
     }
   }
-  getTotalPlayCount(playlist: any): number {
-    return playlist.tracks.reduce((sum: any, track: { playCount: any }) => sum + track.playCount, 0);
+
+  getTotalPlayCount(playlist: any): any {
+    if (playlist?.tracks?.length > 0) {
+      return playlist.tracks.reduce((sum: number, track: { playCount: number }) => sum + track.playCount, 0);
+    } else {
+      return 0;
+    }
   }
   play(track: any): void {
     // track.playCount++;
@@ -175,10 +177,10 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     });
   }
 
-  removeFile(file: NgxFileDropEntry) {
+  removeFile(file: NgxFileDropEntry): void {
     const index = this.files.findIndex(f => f.relativePath === file.relativePath);
     if (index !== -1) {
-      this.files[index].relativePath = '---[UPLOADED]--- ' + this.files[index].relativePath;
+      this.files[index].relativePath = '---[UPLOADED]--- ' + String(this.files[index].relativePath);
       this.startTimer(0.07, index);
     }
   }
@@ -195,19 +197,17 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     this.files.splice(index, 1);
   }
 
-  onCancel() {
+  onCancel(): void {
     this.showModal = false;
   }
 
-  public dropped(files: NgxFileDropEntry[]) {
+  public dropped(files: NgxFileDropEntry[]): void {
     this.files = files;
     for (const droppedFile of files) {
       // Is it a file?
       if (droppedFile.fileEntry.isFile) {
         const fileEntry = droppedFile.fileEntry as FileSystemFileEntry;
         fileEntry.file((file: File) => {
-          // Here you can access the real file
-          console.log(droppedFile.relativePath, file);
           this.uploadFile(file, droppedFile);
           /**
            // You could upload it like this:
@@ -228,20 +228,11 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
       } else {
         // It was a directory (empty directories are added, otherwise only files)
         const fileEntry = droppedFile.fileEntry as FileSystemDirectoryEntry;
-        console.log(droppedFile.relativePath, fileEntry);
       }
     }
   }
 
-  public fileOver(event: any) {
-    console.log(event);
-  }
-
-  public fileLeave(event: any) {
-    console.log(event);
-  }
-
-  onFilesDropped(files: NgxFileDropEntry[]) {
+  onFilesDropped(files: NgxFileDropEntry[]): void {
     this.files = []; // Reset files
     for (const droppedFile of files) {
       if (droppedFile.fileEntry.isFile) {
@@ -254,21 +245,6 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     }
   }
 
-  onUpload() {
-    this.isUploading = true;
-    this.uploadFinished = false;
-    this.uploadInProgress = true;
-
-    // @ts-ignore
-    const uploadPromises = this.files.map(file => this.uploadFile(file, null));
-
-    Promise.all(uploadPromises).then(() => {
-      this.uploadFinished = true;
-      this.uploadInProgress = false;
-      this.isUploading = false;
-    });
-  }
-
   formatDuration(seconds: number): string {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -279,7 +255,7 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   }
 
   extractYouTubeVideoId(url: string): string | null {
-    const regExp = /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+    const regExp = /(?:youtube\.com\/(?:[^/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
     const match = url.match(regExp);
     return match ? match[1] : null;
   }
@@ -302,9 +278,9 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
 
       this.showYoutubeDownloadModal = true;
       this.startSimulation();
-      this.trackBeatStreamService.downloadYoutubeVideo(videoId, videoType, this.playlist.id).subscribe((videoId: any) => {
+      this.trackBeatStreamService.downloadYoutubeVideo(videoId, videoType, this.playlist.id).subscribe((videoRes: any) => {
         this.enableStatus = false;
-        this.currentStatus = videoId.body.status;
+        this.currentStatus = videoRes.body.status;
         this.loadPlaylist(this.playlist.id);
         this.intervalId = setInterval(() => {
           this.showYoutubeDownloadModal = false;
@@ -353,18 +329,18 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     return colors[index];
   }
 
-  openDeleteConfirmation() {
+  openDeleteConfirmation(): void {
     this.showConfirmation = true;
   }
 
   // Confirm delete action
-  confirmDelete() {
+  confirmDelete(): void {
     // Perform the delete action here
     this.deletePlaylist(this.playlist.id);
   }
 
   // Close the confirmation popup
-  closeDeleteConfirmation() {
+  closeDeleteConfirmation(): void {
     this.showConfirmation = false;
   }
 }
