@@ -15,9 +15,14 @@
 
 logging:
   level:
-    ROOT: INFO
-    tech.jhipster: INFO
-    com.konsol.beatstream: INFO
+    ROOT: DEBUG
+    tech.jhipster: DEBUG
+    com.konsol.beatstream: DEBUG
+  pattern:
+    console: '%d{yyyy-MM-dd HH:mm:ss} - %msg%n'
+  file:
+    path: logs/
+    name: spring.log
 
 management:
   prometheus:

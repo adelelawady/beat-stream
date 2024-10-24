@@ -16,6 +16,7 @@ import com.konsol.beatstream.service.mapper.PlaylistMapper;
 import com.konsol.beatstream.service.mapper.TrackMapper;
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -116,29 +117,41 @@ public class PlaylistServiceImpl implements PlaylistService {
 
     @Override
     public void delete(String id) {
-        LOG.debug("Request to delete Playlist : {}", id);
+        try {
+            Optional<Playlist> playlist = playlistRepository.findById(id);
+            if (playlist.isEmpty()) {
+                return;
+            }
 
-        Optional<Playlist> playlist = playlistRepository.findById(id);
-        if (playlist.isEmpty()) {
-            return;
+            playlist
+                .get()
+                .getTracks()
+                .forEach(track -> {
+                    try {
+                        try {
+                            Optional<BeatStreamFile> beatStreamFileDTO = beatStreamFileService.findOneDomain(track.getAudioFileId());
+
+                            if (beatStreamFileDTO.isPresent()) {
+                                File file = new File(
+                                    rootPath
+                                        .resolve(playlist.get().getOwnerId() + "\\" + "audioFiles" + "\\" + track.getAudioFileId())
+                                        .toUri()
+                                );
+                                file.delete();
+                                beatStreamFileService.delete(track.getAudioFileId());
+                            }
+                        } catch (Exception e) {
+                            LOG.debug(e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
+                        }
+                        trackRepository.deleteById(track.getId());
+                    } catch (Exception e) {
+                        LOG.debug(e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
+                    }
+                });
+            playlistRepository.deleteById(id);
+        } catch (Exception e) {
+            LOG.debug(e.getMessage() + " " + Arrays.toString(e.getStackTrace()));
         }
-
-        playlist
-            .get()
-            .getTracks()
-            .forEach(track -> {
-                Optional<BeatStreamFile> beatStreamFileDTO = beatStreamFileService.findOneDomain(track.getAudioFileId());
-
-                if (beatStreamFileDTO.isPresent()) {
-                    File file = new File(
-                        rootPath.resolve(playlist.get().getOwnerId() + "\\" + "audioFiles" + "\\" + track.getAudioFileId()).toUri()
-                    );
-                    file.delete();
-                    beatStreamFileService.delete(track.getAudioFileId());
-                }
-                trackRepository.deleteById(track.getId());
-            });
-        playlistRepository.deleteById(id);
     }
 
     @Override

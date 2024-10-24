@@ -19,7 +19,7 @@ export class PlyrMainComponent implements OnInit {
     title: 'Song Title',
     artist: 'Artist Name',
     url: 'none',
-    artwork: 'https://as2.ftcdn.net/v2/jpg/02/98/27/61/1000_F_298276112_Xa5xbk8UNgzNozC0n3itmPyQO2alNZnl.jpg',
+    artwork: 'http://localhost:8080/content/images/logo-jhipster.png',
     duration: 0,
   };
 

@@ -27,6 +27,11 @@
     </root>
     -->
 
+
+
+
+
+
     <logger name="com.konsol.beatstream" level="INFO"/>
   <logger name="org.springframework.web.socket" level="OFF"/>
   <logger name="org.springframework.web.socket.handler" level="OFF"/>
@@ -67,9 +72,10 @@
     <!-- jhipster-needle-logback-add-log - JHipster will add a new log with level -->
 
     <springProperty name="log.level" source="logging.level.root" defaultValue="INFO" />
-    <root level="${log.level}">
-        <appender-ref ref="CONSOLE" />
-    </root>
+  <!-- Root logger configuration -->
+  <root level="info">
+    <appender-ref ref="CONSOLE" />
+  </root>
 
     <!-- Prevent logback from outputting its own status -->
     <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
@@ -78,4 +84,31 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
+
+  <springProfile name="prod">
+    <!-- Log to console -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+      </encoder>
+    </appender>
+
+    <!-- Log to file in production -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+      <file>logs/spring-prod.log</file>
+      <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+        <fileNamePattern>logs/spring-prod.%d{yyyy-MM-dd}.log</fileNamePattern>
+        <maxHistory>30</maxHistory>
+      </rollingPolicy>
+      <encoder>
+        <pattern>%d{yyyy-MM-dd HH:mm:ss} %-5level %logger{36} - %msg%n</pattern>
+      </encoder>
+    </appender>
+
+    <root level="DEBUG">
+      <appender-ref ref="CONSOLE"/>
+      <appender-ref ref="FILE"/>
+    </root>
+  </springProfile>
 </configuration>
+

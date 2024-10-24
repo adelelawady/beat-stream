@@ -278,18 +278,31 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
 
       this.showYoutubeDownloadModal = true;
       this.startSimulation();
-      this.trackBeatStreamService.downloadYoutubeVideo(videoId, videoType, this.playlist.id).subscribe((videoRes: any) => {
-        this.enableStatus = false;
-        this.currentStatus = videoRes.body.status;
-        this.loadPlaylist(this.playlist.id);
-        this.intervalId = setInterval(() => {
-          this.showYoutubeDownloadModal = false;
-          this.index = 0;
-          this.currentStatus = '';
-        }, 6000);
+
+      this.trackBeatStreamService.downloadYoutubeVideo(videoId, videoType, this.playlist.id).subscribe({
+        next: (value: any) => {
+          this.enableStatus = false;
+          this.currentStatus = value.body.status;
+          this.loadPlaylist(this.playlist.id);
+          this.intervalId = setInterval(() => {
+            this.showYoutubeDownloadModal = false;
+            this.index = 0;
+            this.currentStatus = '';
+          }, 6000);
+        },
+        error: error => {
+          this.enableStatus = false;
+          this.currentStatus = 'Failed To Add Video :' + String(error);
+          this.loadPlaylist(this.playlist.id);
+          this.intervalId = setInterval(() => {
+            this.showYoutubeDownloadModal = false;
+            this.index = 0;
+            this.currentStatus = '';
+          }, 6000);
+        },
       });
+
       this.closeYoutubeModal();
-      //
     }
   }
   isYouTubeOrSoundCloud(url: string): string {

@@ -128,24 +128,34 @@ public class TrackServiceImpl implements TrackService {
             return;
         }
 
-        //delete the file if available
-        if (track.getAudioFileId() != null && !Objects.equals(track.getAudioFileId(), "")) {
-            Optional<BeatStreamFile> beatStreamFileDTO = beatStreamFileService.findOneDomain(track.getAudioFileId());
-
-            if (beatStreamFileDTO.isPresent()) {
-                File file = new File(rootPath.resolve(track.getOwnerId() + "\\" + "audioFiles" + "\\" + track.getAudioFileId()).toUri());
-                file.delete();
-                beatStreamFileService.delete(track.getAudioFileId());
-
-                beatStreamFileService.delete(track.getAudioFileId());
+        try {
+            for (Playlist playlist : track.getPlaylists()) {
+                playlist.getTracks().remove(track);
+                playlistService.save(playlist);
             }
+        } catch (Exception e) {
+            LOG.debug(Arrays.toString(e.getStackTrace()));
+        }
+        //delete the file if available
+        try {
+            if (track.getAudioFileId() != null && !Objects.equals(track.getAudioFileId(), "")) {
+                Optional<BeatStreamFile> beatStreamFileDTO = beatStreamFileService.findOneDomain(track.getAudioFileId());
+
+                if (beatStreamFileDTO.isPresent()) {
+                    File file = new File(
+                        rootPath.resolve(track.getOwnerId() + "\\" + "audioFiles" + "\\" + track.getAudioFileId()).toUri()
+                    );
+                    file.delete();
+                    beatStreamFileService.delete(track.getAudioFileId());
+
+                    beatStreamFileService.delete(track.getAudioFileId());
+                }
+            }
+        } catch (Exception e) {
+            LOG.debug(Arrays.toString(e.getStackTrace()));
         }
         //TODO delete image file
 
-        for (Playlist playlist : track.getPlaylists()) {
-            playlist.getTracks().remove(track);
-            playlistService.save(playlist);
-        }
         LOG.debug("Request to delete Track : {}", id);
         trackRepository.deleteById(id);
     }

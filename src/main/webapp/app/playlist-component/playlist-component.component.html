@@ -72,7 +72,7 @@
 
           <div class="artist__info__actions">
             <button (click)="playAnyTrack()" class="button-dark">
-              <i class="ion-ios-play"></i>
+              <i class="icon ion-ios-play-outline"></i>
               Play
             </button>
 
@@ -174,11 +174,11 @@
                       <div class="tracks__heading__title">Song</div>
 
                       <div class="tracks__heading__length">
-                        <i class="ion-ios-stopwatch-outline"></i>
+                        <i class="icon ion-ios-stopwatch-outline"></i>
                       </div>
 
                       <div class="tracks__heading__popularity">
-                        <i class="ion-play"></i>
+                        <i class="icon ion-play"></i>
                       </div>
                     </div>
 
@@ -186,9 +186,9 @@
                       <div class="track__number">{{ track.id | slice: 5 : 8 }}</div>
 
                       <div class="track__added">
-                        <i [ngClass]="track === selectedTrack ? 'display-none' : ''" class="ion-checkmark-round added"></i>
+                        <i [ngClass]="track === selectedTrack ? 'display-none' : ''" class="icon ion-checkmark-round added"></i>
 
-                        <i [ngClass]="track !== selectedTrack ? 'display-none' : ''" class="ion-play added"></i>
+                        <i [ngClass]="track !== selectedTrack ? 'display-none' : ''" class="icon ion-play added"></i>
                       </div>
 
                       <div class="track__title" style="{{ 'color:' + (track === selectedTrack ? 'burlywood' : 'white') }}">

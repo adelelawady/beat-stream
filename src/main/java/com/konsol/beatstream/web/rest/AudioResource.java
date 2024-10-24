@@ -9,6 +9,7 @@ import com.konsol.beatstream.service.audioPlugins.youtube.YoutubeDownloader;
 import com.konsol.beatstream.web.api.AudioApi;
 import com.konsol.beatstream.web.api.AudioApiDelegate;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.units.qual.A;
@@ -53,14 +54,17 @@ public class AudioResource implements AudioApiDelegate {
         Status status = new Status();
         status.setStatus("Video Added To Downloading List And Will be downloaded soon");
         if (!refType.isBlank() && refType.equalsIgnoreCase("youtube")) {
-            youtubeDownloader.AddYoutubeVideo(refid, playlistId);
-
-            return ResponseEntity.ok(status);
+            try {
+                youtubeDownloader.AddYoutubeVideo(refid, playlistId);
+                return ResponseEntity.ok(status);
+            } catch (Exception e) {
+                status.setStatus(e.getMessage());
+                return ResponseEntity.ok(status);
+            }
         }
 
         if (!refType.isBlank() && refType.equalsIgnoreCase("soundCloud")) {
             soundCloudDownloader.addSoundCloudLink(refid, playlistId);
-
             return ResponseEntity.ok(status);
         }
         status.setStatus("Failed To Download Audio File From ");
