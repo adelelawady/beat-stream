@@ -364,11 +364,11 @@ body a:hover {
 }
 
 .navigation {
-  height: 71vh;
   padding: 15px;
   background: #282828;
   color: #aaaaaa;
   overflow-y: scroll;
+  height: auto;
 }
 .navigation__list {
   display: flex;
@@ -753,7 +753,7 @@ body a:hover {
   flex-flow: row wrap;
 }
 .artist__header .artist__info__actions button {
-  margin-right: 10px;
+  margin: 4px;
   height: 27px;
   display: flex;
   flex-flow: row wrap;
