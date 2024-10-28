@@ -1,7 +1,11 @@
 package com.konsol.beatstream.repository;
 
+import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.domain.Track;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,5 +14,5 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface TrackRepository extends MongoRepository<Track, String> {
-    Optional<Track> findByRefIdAndRefTypeAndOwnerId(String id, String refType, String OwnerId);
+    Optional<Track> findByRefIdAndRefTypeAndOwnerIdAndPlaylistsIn(String refId, String refType, String ownerId, List<String> playlists);
 }

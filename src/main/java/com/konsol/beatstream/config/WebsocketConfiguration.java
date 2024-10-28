@@ -39,10 +39,10 @@ public class WebsocketConfiguration implements WebSocketMessageBrokerConfigurer 
             .orElse(new String[0]);
         registry
             .addEndpoint("/websocket/tracker")
-            .setHandshakeHandler(defaultHandshakeHandler())
+            //.setHandshakeHandler(defaultHandshakeHandler())
             .setAllowedOrigins(allowedOrigins)
-            .withSockJS()
-            .setInterceptors(httpSessionHandshakeInterceptor());
+            .withSockJS();
+        //.setInterceptors(httpSessionHandshakeInterceptor());
     }
 
     @Bean

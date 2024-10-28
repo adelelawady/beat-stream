@@ -10,6 +10,7 @@ import FooterComponent from 'app/layouts/footer/footer.component';
 import { AudioService } from 'app/shared/service/audio.service';
 import { FileSystemDirectoryEntry, FileSystemFileEntry, NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { timer } from 'rxjs';
+import { TaskNodeDownloadService } from 'app/shared/service/TaskNodeDownload.service';
 
 @Component({
   selector: 'jhi-playlist-component',
@@ -76,6 +77,7 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   uploadInProgress = false;
 
   playlistBeatStreamService = inject(PlaylistBeatStreamService);
+  taskListSerivce = inject(TaskNodeDownloadService);
 
   constructor(
     private formBuilder: FormBuilder,
@@ -93,6 +95,12 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
       if (track !== null && track === 'PlayAny') {
         this.playAnyTrack();
       }
+
+      this.taskListSerivce.TaskList$.subscribe(_taskList => {
+        if (_taskList === 'reload') {
+          this.loadPlaylist(this.playlist.id);
+        }
+      });
     });
   }
   ngOnChanges(changes: SimpleChanges): void {
@@ -264,7 +272,9 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     if (!this.youtubeVideoUrl) {
       return;
     }
-    const videoType = this.isYouTubeOrSoundCloud(this.youtubeVideoUrl);
+    let videoType = this.isYouTubeOrSoundCloud(this.youtubeVideoUrl);
+    /* eslint-disable */
+    console.log(videoType);
     let videoId;
     if (videoType === 'YouTube') {
       videoId = this.extractYouTubeVideoId(this.youtubeVideoUrl);
@@ -272,6 +282,28 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     if (videoType === 'SoundCloud') {
       videoId = encodeURIComponent(this.youtubeVideoUrl);
     }
+    if (videoType === 'youtubeList') {
+      videoId = encodeURIComponent(this.youtubeVideoUrl);
+      const userConfirmed = confirm('Are you sure you want Download Whole Playlist ? [ Ok to proceed cancel to download video only ]');
+      if (userConfirmed) {
+      } else {
+        videoType = 'YouTube';
+      }
+    }
+
+    if (videoType === 'soundcloudList') {
+      videoId = encodeURIComponent(this.youtubeVideoUrl);
+      const userConfirmed = confirm('Are you sure you want Download Whole Playlist ?');
+      if (userConfirmed) {
+      } else {
+        return;
+      }
+    }
+
+    // if (this.youtubeVideoUrl.includes('spotify')) {
+    //   videoType='spotify';
+    //   videoId = encodeURIComponent(this.youtubeVideoUrl);
+    // }
 
     if (videoId) {
       // encodeURIComponent(url);
@@ -284,11 +316,9 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
           this.enableStatus = false;
           this.currentStatus = value.body.status;
           this.loadPlaylist(this.playlist.id);
-          this.intervalId = setInterval(() => {
-            this.showYoutubeDownloadModal = false;
-            this.index = 0;
-            this.currentStatus = '';
-          }, 6000);
+          this.showYoutubeDownloadModal = false;
+          this.index = 0;
+          this.currentStatus = '';
         },
         error: error => {
           this.enableStatus = false;
@@ -308,11 +338,20 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   isYouTubeOrSoundCloud(url: string): string {
     const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
     const soundcloudRegex = /^(https?:\/\/)?(www\.)?soundcloud\.com\/.+$/;
+    const spotifyRegex = /^https:\/\/open\.spotify\.com\/(track|album|artist|playlist)\/[a-zA-Z0-9]{22}$/;
+    const youtubeListRegex = /^https:\/\/www\.youtube\.com\/watch\?v=[a-zA-Z0-9_-]{11}(&list=[a-zA-Z0-9_-]+)?$/;
+    const soundCloudPlayListUrlRegex = /^https?:\/\/(www\.)?soundcloud\.com\/[\w-]+\/sets\/[\w-]+\/?$/;
 
-    if (youtubeRegex.test(url)) {
+    if (url.includes('youtube') && url.includes('&list=')) {
+      return 'youtubeList';
+    } else if (soundCloudPlayListUrlRegex.test(url)) {
+      return 'soundcloudList';
+    } else if (youtubeRegex.test(url)) {
       return 'YouTube';
     } else if (soundcloudRegex.test(url)) {
       return 'SoundCloud';
+    } else if (spotifyRegex.test(url)) {
+      return 'Spotify';
     } else {
       return 'Invalid URL';
     }

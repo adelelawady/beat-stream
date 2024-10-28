@@ -31,6 +31,8 @@
 
 
 
+  <logger name="javax.management.remote.rmi" level="OFF"/>
+  <logger name="jdk.internal.httpclient.debug" level="OFF"/>
 
     <logger name="com.konsol.beatstream" level="INFO"/>
   <logger name="org.springframework.web.socket" level="OFF"/>
@@ -62,8 +64,8 @@
     <logger name="org.thymeleaf" level="WARN"/>
     <logger name="org.xnio" level="WARN"/>
     <logger name="io.swagger.v3" level="INFO"/>
-    <logger name="sun.rmi" level="WARN"/>
-    <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="sun.rmi" level="OFF"/>
+    <logger name="sun.rmi.transport" level="OFF"/>
     <!-- See https://github.com/jhipster/generator-jhipster/issues/13835 -->
     <logger name="Validator" level="INFO"/>
     <!-- See https://github.com/jhipster/generator-jhipster/issues/14444 -->

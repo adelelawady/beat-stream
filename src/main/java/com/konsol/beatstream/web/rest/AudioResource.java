@@ -1,11 +1,17 @@
 package com.konsol.beatstream.web.rest;
 
 import com.konsol.beatstream.domain.Playlist;
+import com.konsol.beatstream.domain.TaskNode;
+import com.konsol.beatstream.domain.User;
+import com.konsol.beatstream.domain.enumeration.DownloadType;
+import com.konsol.beatstream.domain.enumeration.ReferenceType;
 import com.konsol.beatstream.service.TrackService;
+import com.konsol.beatstream.service.UserService;
 import com.konsol.beatstream.service.api.dto.Status;
 import com.konsol.beatstream.service.api.dto.Track;
 import com.konsol.beatstream.service.audioPlugins.SoundCloud.SoundCloudDownloader;
 import com.konsol.beatstream.service.audioPlugins.youtube.YoutubeDownloader;
+import com.konsol.beatstream.service.impl.TaskNodeServiceImpl;
 import com.konsol.beatstream.web.api.AudioApi;
 import com.konsol.beatstream.web.api.AudioApiDelegate;
 import java.math.BigDecimal;
@@ -15,6 +21,7 @@ import java.util.stream.Collectors;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,6 +39,16 @@ public class AudioResource implements AudioApiDelegate {
 
     @Autowired
     SoundCloudDownloader soundCloudDownloader;
+
+    @Autowired
+    private TaskNodeServiceImpl taskNodeService;
+
+    @Autowired
+    private UserService userService;
+
+    public AudioResource(SimpMessageSendingOperations messagingTemplate) {
+        // this.messagingTemplate = messagingTemplate;
+    }
 
     @Override
     public ResponseEntity<com.konsol.beatstream.service.api.dto.Track> uploadSongFile(
@@ -53,9 +70,70 @@ public class AudioResource implements AudioApiDelegate {
     public ResponseEntity<Status> downloadAudio(String refid, String refType, String playlistId) {
         Status status = new Status();
         status.setStatus("Video Added To Downloading List And Will be downloaded soon");
+        User user = userService.getCurrentUser();
         if (!refType.isBlank() && refType.equalsIgnoreCase("youtube")) {
             try {
-                youtubeDownloader.AddYoutubeVideo(refid, playlistId);
+                TaskNode taskNode = taskNodeService.createTask(
+                    refid,
+                    ReferenceType.YOUTUBE,
+                    refid,
+                    playlistId,
+                    null,
+                    DownloadType.AUDIO,
+                    0,
+                    user.getId()
+                );
+
+                return ResponseEntity.ok(status);
+            } catch (Exception e) {
+                status.setStatus(e.getMessage());
+                return ResponseEntity.ok(status);
+            }
+        }
+
+        if (!refType.isBlank() && refType.equalsIgnoreCase("soundcloudList")) {
+            try {
+                TaskNode taskNode = taskNodeService.createTask(
+                    refid,
+                    ReferenceType.SOUNDCLOUD,
+                    refid,
+                    playlistId,
+                    null,
+                    DownloadType.AUDIO_PLAYLIST,
+                    0,
+                    user.getId()
+                );
+                return ResponseEntity.ok(status);
+            } catch (Exception e) {
+                status.setStatus(e.getMessage());
+                return ResponseEntity.ok(status);
+            }
+        }
+
+        if (!refType.isBlank() && refType.equalsIgnoreCase("youtubelist")) {
+            try {
+                TaskNode taskNode = taskNodeService.createTask(
+                    refid,
+                    ReferenceType.YOUTUBE,
+                    refid,
+                    playlistId,
+                    null,
+                    DownloadType.AUDIO_PLAYLIST,
+                    0,
+                    user.getId()
+                );
+                return ResponseEntity.ok(status);
+            } catch (Exception e) {
+                status.setStatus(e.getMessage());
+                return ResponseEntity.ok(status);
+            }
+        }
+
+        if (!refType.isBlank() && refType.equalsIgnoreCase("spotify")) {
+            try {
+                status.setStatus("SPOTIFY NOT IMPELEMENTED YET");
+                // TaskNode taskNode= taskNodeService.createTask(refid, ReferenceType.SPOTIFY,refid,playlistId,
+                //     null, DownloadType.AUDIO,0,user.getId());
                 return ResponseEntity.ok(status);
             } catch (Exception e) {
                 status.setStatus(e.getMessage());
@@ -64,7 +142,17 @@ public class AudioResource implements AudioApiDelegate {
         }
 
         if (!refType.isBlank() && refType.equalsIgnoreCase("soundCloud")) {
-            soundCloudDownloader.addSoundCloudLink(refid, playlistId);
+            TaskNode taskNode = taskNodeService.createTask(
+                refid,
+                ReferenceType.SOUNDCLOUD,
+                refid,
+                playlistId,
+                null,
+                DownloadType.AUDIO,
+                0,
+                user.getId()
+            );
+
             return ResponseEntity.ok(status);
         }
         status.setStatus("Failed To Download Audio File From ");

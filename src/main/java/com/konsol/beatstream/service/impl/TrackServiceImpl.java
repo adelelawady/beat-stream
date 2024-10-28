@@ -297,7 +297,7 @@ public class TrackServiceImpl implements TrackService {
     }
 
     @Override
-    public Track createTrack(String refId, String refType, String playlistId) {
+    public Track createTrack(String refId, String refType, String playlistId, String ownerId) {
         if (playlistId == null) {
             throw new RuntimeException("Play list Not found");
         }
@@ -308,7 +308,7 @@ public class TrackServiceImpl implements TrackService {
             throw new RuntimeException("Playlist Not found");
         }
 
-        User user = userService.getCurrentUser();
+        //   User user = userService.getCurrentUser();
 
         Track track = new Track();
 
@@ -319,7 +319,7 @@ public class TrackServiceImpl implements TrackService {
             track.setPlaylists(new LinkedHashSet<>());
         }
         track.getPlaylists().add(playlist.get());
-        track.setOwnerId(user.getId());
+        track.setOwnerId(ownerId);
 
         Playlist playlist1 = playlist.get();
         playlist1.getTracks().add(track);
@@ -332,40 +332,44 @@ public class TrackServiceImpl implements TrackService {
 
     @Override
     public Track connectTrackToAudioFile(String trackId, String filePth) {
-        File file = new File(filePth);
+        try {
+            File file = new File(filePth);
 
-        if (file.exists()) {
-            Track track = trackRepository.findById(trackId).orElse(null);
+            if (file.exists()) {
+                Track track = trackRepository.findById(trackId).orElse(null);
 
-            if (track == null) {
-                throw new RuntimeException("track does not exist");
+                if (track == null) {
+                    throw new RuntimeException("track does not exist");
+                }
+                BeatStreamFile beatStreamFile = new BeatStreamFile();
+                // User user = userService.getCurrentUser();
+                Path bucketPath = rootPath.resolve(track.getOwnerId() + "\\" + "audioFiles");
+                beatStreamFile.bucket(track.getOwnerId() + "\\" + "audioFiles");
+                beatStreamFile.name(file.getName());
+                beatStreamFile.setSize(file.length());
+                beatStreamFile.setType("audio");
+
+                beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
+                beatStreamFile.setFullPath(bucketPath + "\\" + beatStreamFile.getId());
+
+                beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
+
+                Path source = Paths.get(filePth);
+                Path destination = Paths.get(bucketPath + "\\" + beatStreamFile.getId());
+
+                try {
+                    Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                track.setAudioFileId(beatStreamFile.getId());
+                return trackRepository.save(track);
+            } else {
+                throw new RuntimeException("File does not exist");
             }
-            BeatStreamFile beatStreamFile = new BeatStreamFile();
-            User user = userService.getCurrentUser();
-            Path bucketPath = rootPath.resolve(user.getId() + "\\" + "audioFiles");
-            beatStreamFile.bucket(user.getId() + "\\" + "audioFiles");
-            beatStreamFile.name(file.getName());
-            beatStreamFile.setSize(file.length());
-            beatStreamFile.setType("audio");
-
-            beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
-            beatStreamFile.setFullPath(bucketPath + "\\" + beatStreamFile.getId());
-
-            beatStreamFile = beatStreamFileRepository.save(beatStreamFile);
-
-            Path source = Paths.get(filePth);
-            Path destination = Paths.get(bucketPath + "\\" + beatStreamFile.getId());
-
-            try {
-                Files.move(source, destination, StandardCopyOption.REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-
-            track.setAudioFileId(beatStreamFile.getId());
-            return trackRepository.save(track);
-        } else {
-            throw new RuntimeException("File does not exist");
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage());
         }
     }
 

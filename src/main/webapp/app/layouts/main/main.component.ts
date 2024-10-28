@@ -8,13 +8,14 @@ import { AppPageTitleStrategy } from 'app/app-page-title-strategy';
 import FindLanguageFromKeyPipe from 'app/shared/language/find-language-from-key.pipe';
 import FooterComponent from '../footer/footer.component';
 import PageRibbonComponent from '../profiles/page-ribbon.component';
+import { ToasterComponent } from 'app/toast/toaster/toaster.component';
 
 @Component({
   standalone: true,
   selector: 'jhi-main',
   templateUrl: './main.component.html',
   providers: [AppPageTitleStrategy],
-  imports: [RouterOutlet, FooterComponent, PageRibbonComponent],
+  imports: [RouterOutlet, FooterComponent, PageRibbonComponent, ToasterComponent],
 })
 export default class MainComponent implements OnInit {
   private renderer: Renderer2;

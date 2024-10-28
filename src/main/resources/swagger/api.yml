@@ -252,6 +252,18 @@ components:
           type: number
           x-stoplight:
             id: fzfizssqe192b
+        refType:
+          type: string
+          x-stoplight:
+            id: vlhua52ou8hr5
+        refId:
+          type: string
+          x-stoplight:
+            id: reidh9zahw5w4
+        createdDate:
+          type: string
+          x-stoplight:
+            id: cbllqlbim9bbr
     playlist:
       title: playlist
       x-stoplight:

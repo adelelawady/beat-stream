@@ -1,0 +1,45 @@
+{
+  "beatStreamApp": {
+    "taskNode": {
+      "home": {
+        "title": "Task Nodes",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Task Node",
+        "createOrEditLabel": "Create or edit a Task Node",
+        "notFound": "No Task Nodes found"
+      },
+      "created": "A new Task Node is created with identifier {{ param }}",
+      "updated": "A Task Node is updated with identifier {{ param }}",
+      "deleted": "A Task Node is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Task Node {{ id }}?"
+      },
+      "detail": {
+        "title": "Task Node"
+      },
+      "id": "ID",
+      "referenceType": "Reference Type",
+      "referenceId": "Reference Id",
+      "taskName": "Task Name",
+      "taskLog": "Task Log",
+      "trackId": "Track Id",
+      "scheduledStartTime": "Scheduled Start Time",
+      "startDelayMinutes": "Start Delay Minutes",
+      "startDelayHours": "Start Delay Hours",
+      "elapsedHours": "Elapsed Hours",
+      "elapsedMinutes": "Elapsed Minutes",
+      "progressPercentage": "Progress Percentage",
+      "downloadFilesize": "Download Filesize",
+      "downloadSpeed": "Download Speed",
+      "downloadEta": "Download Eta",
+      "nodeIndex": "Node Index",
+      "status": "Status",
+      "type": "Type",
+      "failCount": "Fail Count",
+      "retryCount": "Retry Count",
+      "maxRetryCount": "Max Retry Count",
+      "childTasks": "Child Tasks",
+      "parentTask": "Parent Task"
+    }
+  }
+}

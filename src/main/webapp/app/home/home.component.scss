@@ -1,3 +1,38 @@
 jhi-playlist-component {
   display: contents;
 }
+
+#download-progress-popup {
+  color: white;
+}
+#download-progress-popup .file-name {
+  color: #3e8acc;
+}
+#download-progress-popup h3 {
+  color: white !important;
+  margin-top: 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+/* Download list item */
+.download-item {
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #555;
+  border-radius: 5px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background-color: #4caf50;
+  width: 0;
+  border-radius: 5px;
+  transition: width 0.2s ease;
+}

@@ -70,7 +70,9 @@
 
           <div class="artist__info__name">{{ playlist.title }}</div>
 
-          <div class="artist__info__actions">
+          <div *ngIf="!playlist?.title" class="artist__info__name">SELECT OR CREATE NEW PLAYLIST</div>
+
+          <div *ngIf="playlist?.title" class="artist__info__actions">
             <button (click)="playAnyTrack()" class="button-dark">
               <i class="icon ion-ios-play-outline"></i>
               Play
@@ -178,6 +180,10 @@
                       </div>
 
                       <div class="tracks__heading__popularity">
+                        <i class="icon ion-ios-download"></i>
+                      </div>
+
+                      <div class="tracks__heading__popularity">
                         <i class="icon ion-play"></i>
                       </div>
                     </div>
@@ -202,6 +208,16 @@
 -->
                       <div class="track__length">{{ formatDuration(track.duration) }}</div>
 
+                      <div class="track__popularity">
+                        <img style="width: 20px; height: 20px" *ngIf="track.refType === 'YOUTUBE'" src="/content/images/youtube.png" />
+                        <img
+                          style="width: 20px; height: 20px"
+                          *ngIf="track.refType === 'SOUNDCLOUD'"
+                          src="/content/images/soundcloud.png"
+                        />
+
+                        <i *ngIf="!track.refType" class="icon ion-upload"></i>
+                      </div>
                       <div class="track__popularity">
                         <span>{{ track.playCount }}</span>
                       </div>

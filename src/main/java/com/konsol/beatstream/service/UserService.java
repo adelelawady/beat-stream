@@ -320,6 +320,8 @@ public class UserService {
     }
 
     public User getCurrentUser() {
+        // return userRepository.findOneByLogin("user").get();
+
         final Optional<User> isUser = this.getUserWithAuthorities();
         return isUser.orElse(null);
     }

@@ -3,21 +3,27 @@ package com.konsol.beatstream.service.audioPlugins.SoundCloud;
 import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
 
 import com.konsol.beatstream.domain.ReferanceDownloadTask;
+import com.konsol.beatstream.domain.TaskNode;
 import com.konsol.beatstream.domain.Track;
 import com.konsol.beatstream.domain.User;
+import com.konsol.beatstream.domain.enumeration.DownloadStatus;
 import com.konsol.beatstream.repository.ReferanceDownloadTaskRepository;
+import com.konsol.beatstream.repository.TaskNodeRepository;
 import com.konsol.beatstream.repository.TrackRepository;
 import com.konsol.beatstream.service.TrackService;
 import com.konsol.beatstream.service.UserService;
 import com.konsol.beatstream.service.audioPlugins.ReferanceTrack.ReferanceTrackHandler;
 import com.konsol.beatstream.service.audioPlugins.youtube.YouTubeVideoInfoScraper;
 import com.konsol.beatstream.service.bucket.BucketManager;
+import com.konsol.beatstream.web.websocket.TaskService;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jaudiotagger.audio.AudioFile;
@@ -44,13 +50,11 @@ public class SoundCloudDownloader {
     @Autowired
     ReferanceTrackHandler referanceTrackHandler;
 
-    ReferanceDownloadTask referanceDownloadTask;
-
     @Autowired
-    UserService userService;
+    TaskService taskService;
 
-    @Autowired
-    ReferanceDownloadTaskRepository referanceDownloadTaskRepository;
+    //@Autowired
+    // UserService userService;
 
     String startupPath = Paths.get("").toAbsolutePath().toString();
 
@@ -58,22 +62,28 @@ public class SoundCloudDownloader {
     private final String YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
     private final String FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
 
+    private TaskNode taskNode = null;
+
+    @Autowired
+    private TaskNodeRepository taskNodeRepository;
+
     // Method to download a song from SoundCloud using yt-dlp.exe
-    public void downloadSong(String soundCloudUrl, Track track, String playList) throws IOException {
+    public void downloadSong(String soundCloudUrl, Track track, TaskNode _taskNode) throws IOException {
         // Ensure the yt-dlp.exe exists
+        taskNode = _taskNode;
         File ytDlpFile = new File(YTDLP_PATH);
         if (!ytDlpFile.exists()) {
             throw new IOException("yt-dlp.exe not found at " + YTDLP_PATH);
         }
 
-        User user = userService.getCurrentUser();
+        //  User user = userService.getCurrentUser();
 
         BucketManager manager = new BucketManager();
 
         try {
             manager.createBucket("soundCloudDl");
-            manager.createBucket(user.getId());
-            manager.createBucket(user.getId() + "\\" + "audioFiles");
+            manager.createBucket(_taskNode.getOwnerId());
+            manager.createBucket(_taskNode.getOwnerId() + "\\" + "audioFiles");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -83,24 +93,52 @@ public class SoundCloudDownloader {
         // Construct the yt-dlp.exe command
         String[] command = { YTDLP_PATH, "-o", outputPath, soundCloudUrl };
 
+        Pattern genericPattern = Pattern.compile("[a-zA-Z0-9@.]+");
+
         // Execute the yt-dlp.exe command
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(true); // Combine stdout and stderr
 
         // Start the process
         Process process = processBuilder.start();
-        referanceDownloadTask.setReferanceStatus("ProcessStarted");
-        referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
 
         // Capture the process output (download progress or errors)
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
             String line;
-            referanceDownloadTask.setReferanceStatus("Downloading");
-            referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
+
             while ((line = reader.readLine()) != null) {
                 System.out.println(line); // Output download progress or errors
-                referanceDownloadTask.setReferanceLog(referanceDownloadTask.getReferanceLog() + "\n" + line);
-                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
+
+                if (taskNode != null) {
+                    taskNode.setTaskLog(taskNode.getTaskLog() + line + "\n");
+                    taskNodeRepository.save(taskNode);
+                    if (line.contains("[download]") && line.contains("ETA")) {
+                        Matcher matcher = genericPattern.matcher(line);
+                        String percentage = "";
+                        String filesize = "";
+                        String speed = "";
+                        String eta1 = "";
+                        String eta2 = "";
+                        int index = 0;
+                        while (matcher.find()) {
+                            String match = matcher.group();
+                            if (index == 1) percentage = match;
+                            else if (index == 3) filesize = match;
+                            else if (index == 5) speed = match;
+                            else if (index == 8) eta1 = match;
+                            else if (index == 9) eta2 = match;
+                            index++;
+                        }
+                        if (!percentage.isEmpty() && !filesize.isEmpty() && !speed.isEmpty() && !eta1.isEmpty() && !eta2.isEmpty()) {
+                            taskNode.setProgressPercentage(BigDecimal.valueOf(Double.parseDouble(percentage)));
+                            taskNode.setDownloadFilesize(filesize);
+                            taskNode.setDownloadSpeed(speed);
+                            taskNode.setDownloadEta(eta1 + ":" + eta2);
+                            taskNodeRepository.save(taskNode);
+                            taskService.sendTaskNodes();
+                        }
+                    }
+                }
             }
         }
 
@@ -108,26 +146,21 @@ public class SoundCloudDownloader {
         try {
             int exitCode = process.waitFor();
             if (exitCode == 0) {
-                referanceDownloadTask.setReferanceStatus("ExtractingAudio");
-                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
+                taskNode.setStatus(DownloadStatus.CONVERSION);
+                taskNodeRepository.save(taskNode);
+                taskService.sendTaskNodes();
 
                 Path outputPath1 = Path.of(outputPath);
 
                 Path outputPath2 = Path.of(outputPath1.toString() + "_Converted.mp3");
                 convertOpusToMp3(outputPath1.toString(), outputPath1.toString() + "_Converted.mp3");
-
-                referanceDownloadTask.setReferanceStatus("SavingFile");
-                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
+                taskService.sendTaskNodes();
                 Track track1 = extrackAndSaveTrackData(track, outputPath2, soundCloudUrl);
 
                 moveAndConnectDownloadedFile(track1, outputPath2);
                 File file = new File(outputPath);
                 file.delete();
-                referanceDownloadTask.setReferanceStatus("AddingAudioToPlayList");
-                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
-
-                referanceDownloadTask.setReferanceStatus("DownloadComplete");
-                referanceDownloadTask = referanceDownloadTaskRepository.save(referanceDownloadTask);
+                taskService.sendTaskNodes();
                 System.out.println("Download complete!");
             } else {
                 System.out.println("Download failed with exit code: " + exitCode);
@@ -160,22 +193,28 @@ public class SoundCloudDownloader {
         }
     }
 
-    public void addSoundCloudLink(String soundCloudId, String playList) {
+    public void addSoundCloudLink(String soundCloudId, String playList, TaskNode taskNode) {
         String[] soundmedtaData = extractUserAndSongFromUrl(soundCloudId);
         String soundUniqCloudId = soundmedtaData[0] + "-" + soundmedtaData[1];
 
-        User user = userService.getCurrentUser();
-        if (trackRepository.findByRefIdAndRefTypeAndOwnerId(soundUniqCloudId, "SOUNDCLOUD", user.getId()).isPresent()) {
-            throw new RuntimeException("YouTube Video already exists: " + soundCloudId);
-        }
+        // User user = userService.getCurrentUser();
+        /*  if (trackRepository.findByRefIdAndRefTypeAndOwnerIdAndPlaylistsIn(soundUniqCloudId, "SOUNDCLOUD", taskNode.getOwnerId(), List.of(playList)).isPresent()) {
+            taskService.sendClientMessage("SoundCloud music already exists: " + soundCloudId);
+            throw new RuntimeException("SoundCloud music already exists: " + soundCloudId);
+        } */
 
-        Track track = trackService.createTrack(soundUniqCloudId, "SOUNDCLOUD", playList);
-
-        referanceDownloadTask = referanceTrackHandler.createDownloadTask(soundUniqCloudId, "SOUNDCLOUD", track.getId());
+        Track track = trackService.createTrack(soundUniqCloudId, "SOUNDCLOUD", playList, taskNode.getOwnerId());
 
         try {
-            downloadSong(soundCloudId, track, playList);
+            if (taskNode != null) {
+                taskNode.setTrackId(track.getId());
+                taskNodeRepository.save(taskNode);
+            }
+
+            downloadSong(soundCloudId, track, taskNode);
+            taskService.sendTaskNodes();
         } catch (Exception e) {
+            System.out.println(e);
             trackService.delete(track.getId());
         }
     }
@@ -223,6 +262,12 @@ public class SoundCloudDownloader {
 
             try {
                 title = getSongNameFromUrl(videoUrl);
+
+                if (taskNode != null) {
+                    taskNode.setTaskName("[TASK] " + title);
+                    taskNodeRepository.save(taskNode);
+                    taskService.sendTaskNodes();
+                }
             } catch (Exception e) {
                 title = tag.getFirst(FieldKey.TITLE);
             }

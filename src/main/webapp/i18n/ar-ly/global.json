@@ -8,7 +8,7 @@
       "entities": {
         "main": "الكيانات",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)",
-        "referanceDownloadTask": "Referance Download Task"
+        "taskNode": "Task Node"
       },
       "account": {
         "main": "الحساب",

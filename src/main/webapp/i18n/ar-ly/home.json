@@ -1,19 +1,19 @@
 {
   "home": {
-    "title": "أهلا وسهلا بك، جافا هبستر!",
+    "title": "أهلا وسهلا بك، BeatStream!",
     "subtitle": "هذه صفحتك الرئيسية",
     "logged": {
       "message": "قمت بتسجيل الدخول كمستخدم \"{{username}}\"."
     },
-    "question": "إذا كان لديك أي سؤال حول JHipster:",
+    "question": "إذا كان لديك أي سؤال حول BeatStream:",
     "link": {
-      "homepage": "JHipster homepage",
-      "stackoverflow": "JHipster on Stack Overflow",
-      "bugtracker": "JHipster bug tracker",
-      "chat": "JHipster public chat room",
-      "follow": "follow @jhipster on Twitter"
+      "homepage": "BeatStream homepage",
+      "stackoverflow": "BeatStream on Stack Overflow",
+      "bugtracker": "BeatStream bug tracker",
+      "chat": "BeatStream public chat room",
+      "follow": "follow @BeatStream on Twitter"
     },
-    "like": "إذا كنت تحب JHipster، لا تنسى أن تعطي لنا نجم على",
+    "like": "إذا كنت تحب BeatStream، لا تنسى أن تعطي لنا نجم على",
     "github": "GitHub"
   }
 }

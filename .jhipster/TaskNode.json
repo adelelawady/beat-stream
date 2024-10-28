@@ -1,0 +1,117 @@
+{
+  "annotations": {
+    "changelogDate": "20241025104943"
+  },
+  "applications": "*",
+  "dto": "mapstruct",
+  "fields": [
+    {
+      "fieldName": "referenceType",
+      "fieldType": "ReferenceType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "UPLOAD,YOUTUBE,SOUNDCLOUD,SPOTIFY"
+    },
+    {
+      "fieldName": "referenceId",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "taskName",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "taskLog",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "trackId",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "scheduledStartTime",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "startDelayMinutes",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "startDelayHours",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "elapsedHours",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "elapsedMinutes",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "progressPercentage",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "downloadFilesize",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "downloadSpeed",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "downloadEta",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nodeIndex",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "status",
+      "fieldType": "DownloadStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "CONVERSION,PENDING,SCHEDULED,IN_PROGRESS,COMPLETED,FAILED,PAUSED"
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "DownloadType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "FILE,AUDIO,VIDEO,AUDIO_PLAYLIST,VIDEO_PLAYLIST,FILE_PLAYLIST"
+    },
+    {
+      "fieldName": "failCount",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "retryCount",
+      "fieldType": "BigDecimal"
+    },
+    {
+      "fieldName": "maxRetryCount",
+      "fieldType": "BigDecimal"
+    }
+  ],
+  "name": "TaskNode",
+  "pagination": "pagination",
+  "relationships": [
+    {
+      "otherEntityName": "taskNode",
+      "otherEntityRelationshipName": "parentTask",
+      "relationshipName": "childTasks",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "taskNode",
+      "otherEntityRelationshipName": "childTasks",
+      "relationshipName": "parentTask",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceImpl"
+}

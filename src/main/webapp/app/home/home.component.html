@@ -58,6 +58,30 @@
         New Playlist
       </a>
     </section>
+
+    <section style="max-height: 300px; overflow: scroll" *ngIf="taskList && taskList.length > 0" class="playlist">
+      <div id="download-progress-popup">
+        <h3>Download QUEUE</h3>
+        <div>
+          @let accountRef = account();
+          <div
+            *ngFor="let item of taskList"
+            class="download-item"
+            [ngStyle]="{ 'background-color': item.type === 'AUDIO_PLAYLIST' ? 'blueviolet' : '#282828' }"
+          >
+            <div *ngIf="item.ownerId === accountRef?.id">
+              <div class="file-name" style="overflow: hidden">{{ item.taskName }}</div>
+              <div class="file-name">Status : {{ item.status }}</div>
+              <div class="file-name">{{ item.downloadFilesize }} | Speed: {{ item.downloadSpeed }} | ETA: {{ item.downloadEta }}</div>
+              <div class="file-name"></div>
+              <div class="progress-bar">
+                <div class="progress-bar-fill" [style.width.%]="item.progressPercentage"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!--
     <section class="playing">
       <div class="playing__art">

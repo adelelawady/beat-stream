@@ -1,0 +1,317 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2 id="jhi-task-node-heading" data-cy="TaskNodeCreateUpdateHeading" jhiTranslate="beatStreamApp.taskNode.home.createOrEditLabel">
+        Create or edit a Task Node
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        @if (editForm.controls.id.value !== null) {
+          <div class="mb-3">
+            <label class="form-label" for="field_id" jhiTranslate="beatStreamApp.taskNode.id">ID</label>
+            <input type="text" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+          </div>
+        }
+
+        @let referenceTypeRef = editForm.get('referenceType')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_referenceType" jhiTranslate="beatStreamApp.taskNode.referenceType">Reference Type</label>
+          <select
+            class="form-control"
+            name="referenceType"
+            formControlName="referenceType"
+            id="field_referenceType"
+            data-cy="referenceType"
+          >
+            <option [ngValue]="null">{{ 'beatStreamApp.ReferenceType.null' | translate }}</option>
+            @for (referenceType of referenceTypeValues; track $index) {
+              <option [value]="referenceType">{{ 'beatStreamApp.ReferenceType.' + referenceType | translate }}</option>
+            }
+          </select>
+          @if (referenceTypeRef.invalid && (referenceTypeRef.dirty || referenceTypeRef.touched)) {
+            <div>
+              @if (editForm.get('referenceType')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let referenceIdRef = editForm.get('referenceId')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_referenceId" jhiTranslate="beatStreamApp.taskNode.referenceId">Reference Id</label>
+          <input
+            type="number"
+            class="form-control"
+            name="referenceId"
+            id="field_referenceId"
+            data-cy="referenceId"
+            formControlName="referenceId"
+          />
+          @if (referenceIdRef.invalid && (referenceIdRef.dirty || referenceIdRef.touched)) {
+            <div>
+              @if (editForm.get('referenceId')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+              <small
+                class="form-text text-danger"
+                [hidden]="!editForm.get('referenceId')?.errors?.number"
+                jhiTranslate="entity.validation.number"
+                >This field should be a number.</small
+              >
+            </div>
+          }
+        </div>
+
+        @let taskNameRef = editForm.get('taskName')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_taskName" jhiTranslate="beatStreamApp.taskNode.taskName">Task Name</label>
+          <input type="text" class="form-control" name="taskName" id="field_taskName" data-cy="taskName" formControlName="taskName" />
+          @if (taskNameRef.invalid && (taskNameRef.dirty || taskNameRef.touched)) {
+            <div>
+              @if (editForm.get('taskName')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_taskLog" jhiTranslate="beatStreamApp.taskNode.taskLog">Task Log</label>
+          <input type="text" class="form-control" name="taskLog" id="field_taskLog" data-cy="taskLog" formControlName="taskLog" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_trackId" jhiTranslate="beatStreamApp.taskNode.trackId">Track Id</label>
+          <input type="number" class="form-control" name="trackId" id="field_trackId" data-cy="trackId" formControlName="trackId" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_scheduledStartTime" jhiTranslate="beatStreamApp.taskNode.scheduledStartTime"
+            >Scheduled Start Time</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_scheduledStartTime"
+              data-cy="scheduledStartTime"
+              type="datetime-local"
+              class="form-control"
+              name="scheduledStartTime"
+              formControlName="scheduledStartTime"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_startDelayMinutes" jhiTranslate="beatStreamApp.taskNode.startDelayMinutes"
+            >Start Delay Minutes</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="startDelayMinutes"
+            id="field_startDelayMinutes"
+            data-cy="startDelayMinutes"
+            formControlName="startDelayMinutes"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_startDelayHours" jhiTranslate="beatStreamApp.taskNode.startDelayHours"
+            >Start Delay Hours</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="startDelayHours"
+            id="field_startDelayHours"
+            data-cy="startDelayHours"
+            formControlName="startDelayHours"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_elapsedHours" jhiTranslate="beatStreamApp.taskNode.elapsedHours">Elapsed Hours</label>
+          <input
+            type="number"
+            class="form-control"
+            name="elapsedHours"
+            id="field_elapsedHours"
+            data-cy="elapsedHours"
+            formControlName="elapsedHours"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_elapsedMinutes" jhiTranslate="beatStreamApp.taskNode.elapsedMinutes">Elapsed Minutes</label>
+          <input
+            type="number"
+            class="form-control"
+            name="elapsedMinutes"
+            id="field_elapsedMinutes"
+            data-cy="elapsedMinutes"
+            formControlName="elapsedMinutes"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_progressPercentage" jhiTranslate="beatStreamApp.taskNode.progressPercentage"
+            >Progress Percentage</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="progressPercentage"
+            id="field_progressPercentage"
+            data-cy="progressPercentage"
+            formControlName="progressPercentage"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_downloadFilesize" jhiTranslate="beatStreamApp.taskNode.downloadFilesize"
+            >Download Filesize</label
+          >
+          <input
+            type="text"
+            class="form-control"
+            name="downloadFilesize"
+            id="field_downloadFilesize"
+            data-cy="downloadFilesize"
+            formControlName="downloadFilesize"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_downloadSpeed" jhiTranslate="beatStreamApp.taskNode.downloadSpeed">Download Speed</label>
+          <input
+            type="text"
+            class="form-control"
+            name="downloadSpeed"
+            id="field_downloadSpeed"
+            data-cy="downloadSpeed"
+            formControlName="downloadSpeed"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_downloadEta" jhiTranslate="beatStreamApp.taskNode.downloadEta">Download Eta</label>
+          <input
+            type="text"
+            class="form-control"
+            name="downloadEta"
+            id="field_downloadEta"
+            data-cy="downloadEta"
+            formControlName="downloadEta"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_nodeIndex" jhiTranslate="beatStreamApp.taskNode.nodeIndex">Node Index</label>
+          <input type="number" class="form-control" name="nodeIndex" id="field_nodeIndex" data-cy="nodeIndex" formControlName="nodeIndex" />
+        </div>
+
+        @let statusRef = editForm.get('status')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_status" jhiTranslate="beatStreamApp.taskNode.status">Status</label>
+          <select class="form-control" name="status" formControlName="status" id="field_status" data-cy="status">
+            <option [ngValue]="null">{{ 'beatStreamApp.DownloadStatus.null' | translate }}</option>
+            @for (downloadStatus of downloadStatusValues; track $index) {
+              <option [value]="downloadStatus">{{ 'beatStreamApp.DownloadStatus.' + downloadStatus | translate }}</option>
+            }
+          </select>
+          @if (statusRef.invalid && (statusRef.dirty || statusRef.touched)) {
+            <div>
+              @if (editForm.get('status')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        @let typeRef = editForm.get('type')!;
+        <div class="mb-3">
+          <label class="form-label" for="field_type" jhiTranslate="beatStreamApp.taskNode.type">Type</label>
+          <select class="form-control" name="type" formControlName="type" id="field_type" data-cy="type">
+            <option [ngValue]="null">{{ 'beatStreamApp.DownloadType.null' | translate }}</option>
+            @for (downloadType of downloadTypeValues; track $index) {
+              <option [value]="downloadType">{{ 'beatStreamApp.DownloadType.' + downloadType | translate }}</option>
+            }
+          </select>
+          @if (typeRef.invalid && (typeRef.dirty || typeRef.touched)) {
+            <div>
+              @if (editForm.get('type')?.errors?.required) {
+                <small class="form-text text-danger" jhiTranslate="entity.validation.required">This field is required.</small>
+              }
+            </div>
+          }
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_failCount" jhiTranslate="beatStreamApp.taskNode.failCount">Fail Count</label>
+          <input type="number" class="form-control" name="failCount" id="field_failCount" data-cy="failCount" formControlName="failCount" />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_retryCount" jhiTranslate="beatStreamApp.taskNode.retryCount">Retry Count</label>
+          <input
+            type="number"
+            class="form-control"
+            name="retryCount"
+            id="field_retryCount"
+            data-cy="retryCount"
+            formControlName="retryCount"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_maxRetryCount" jhiTranslate="beatStreamApp.taskNode.maxRetryCount">Max Retry Count</label>
+          <input
+            type="number"
+            class="form-control"
+            name="maxRetryCount"
+            id="field_maxRetryCount"
+            data-cy="maxRetryCount"
+            formControlName="maxRetryCount"
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label" for="field_parentTask" jhiTranslate="beatStreamApp.taskNode.parentTask">Parent Task</label>
+          <select
+            class="form-control"
+            id="field_parentTask"
+            data-cy="parentTask"
+            name="parentTask"
+            formControlName="parentTask"
+            [compareWith]="compareTaskNode"
+          >
+            <option [ngValue]="null"></option>
+            @for (taskNodeOption of taskNodesSharedCollection; track $index) {
+              <option [ngValue]="taskNodeOption">{{ taskNodeOption.id }}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

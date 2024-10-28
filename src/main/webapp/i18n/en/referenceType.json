@@ -1,0 +1,11 @@
+{
+  "beatStreamApp": {
+    "ReferenceType": {
+      "null": "",
+      "UPLOAD": "UPLOAD",
+      "YOUTUBE": "YOUTUBE",
+      "SOUNDCLOUD": "SOUNDCLOUD",
+      "SPOTIFY": "SPOTIFY"
+    }
+  }
+}

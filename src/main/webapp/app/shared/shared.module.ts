@@ -9,9 +9,7 @@ import TranslateDirective from './language/translate.directive';
 import { AlertComponent } from './alert/alert.component';
 import { AlertErrorComponent } from './alert/alert-error.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-/**
- * Application wide Module
- */
+import { ToasterComponent } from 'app/toast/toaster/toaster.component';
 @NgModule({
   imports: [AlertComponent, AlertErrorComponent, FindLanguageFromKeyPipe, TranslateDirective],
   exports: [

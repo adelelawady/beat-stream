@@ -46,6 +46,11 @@ const routes: Routes = [
     data: { pageTitle: 'beatStreamApp.referanceDownloadTask.home.title' },
     loadChildren: () => import('./referance-download-task/referance-download-task.routes'),
   },
+  {
+    path: 'task-node',
+    data: { pageTitle: 'beatStreamApp.taskNode.home.title' },
+    loadChildren: () => import('./task-node/task-node.routes'),
+  },
   /* jhipster-needle-add-entity-route - JHipster will add entity modules routes here */
 ];
 

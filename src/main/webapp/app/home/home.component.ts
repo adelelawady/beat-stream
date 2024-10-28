@@ -2,13 +2,15 @@ import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-// prettier-ignore
+// eslint-disable
 import SharedModule from 'app/shared/shared.module';
 import { AccountService } from 'app/core/auth/account.service';
 import { Account } from 'app/core/auth/account.model';
 import { TrackBeatStreamService } from 'app/entities/track-beat-stream/service/track-beat-stream.service';
 import { PlaylistBeatStreamService } from 'app/entities/playlist-beat-stream/service/playlist-beat-stream.service';
 import { PlaylistComponentComponent } from 'app/playlist-component/playlist-component.component';
+import { ToastService } from 'app/toast/toast.service';
+import { TaskNodeDownloadService } from 'app/shared/service/TaskNodeDownload.service';
 // prettier-ignore
 @Component({
   standalone: true,
@@ -24,20 +26,24 @@ export default class HomeComponent implements OnInit, OnDestroy {
   isCollapsed = false;
   playlists:any[]=[];
   selectedPlaylist={};
+  taskList:any=[];
   private readonly destroy$ = new Subject<void>();
 
   private playlistBeatStreamService = inject(PlaylistBeatStreamService)
   private trackService = inject(TrackBeatStreamService);
   private accountService = inject(AccountService);
   private router = inject(Router);
-
+  private ToastService = inject(ToastService)
+  private taskListSerivce=inject(TaskNodeDownloadService);
 
   ngOnInit(): void {
     this.accountService
       .getAuthenticationState()
       .pipe(takeUntil(this.destroy$))
       .subscribe(account => {this.account.set(account); this.loadPlaylists();});
-
+    this.taskListSerivce.TaskList$.subscribe(_taskList=>{
+      this.taskList=JSON.parse(_taskList);
+    });
 
   }
   login(): void {

@@ -1,0 +1,143 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (taskNode(); as taskNodeRef) {
+      <div>
+        <h2 data-cy="taskNodeDetailsHeading"><span jhiTranslate="beatStreamApp.taskNode.detail.title">Task Node</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span jhiTranslate="global.field.id">ID</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.id }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.referenceType">Reference Type</span></dt>
+          <dd>
+            <span [jhiTranslate]="'beatStreamApp.ReferenceType.' + (taskNodeRef.referenceType ?? 'null')">{{
+              { null: '', UPLOAD: 'UPLOAD', YOUTUBE: 'YOUTUBE', SOUNDCLOUD: 'SOUNDCLOUD', SPOTIFY: 'SPOTIFY' }[
+                taskNodeRef.referenceType ?? 'null'
+              ]
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.referenceId">Reference Id</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.referenceId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.taskName">Task Name</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.taskName }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.taskLog">Task Log</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.taskLog }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.trackId">Track Id</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.trackId }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.scheduledStartTime">Scheduled Start Time</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.scheduledStartTime | formatMediumDatetime }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.startDelayMinutes">Start Delay Minutes</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.startDelayMinutes }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.startDelayHours">Start Delay Hours</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.startDelayHours }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.elapsedHours">Elapsed Hours</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.elapsedHours }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.elapsedMinutes">Elapsed Minutes</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.elapsedMinutes }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.progressPercentage">Progress Percentage</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.progressPercentage }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.downloadFilesize">Download Filesize</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.downloadFilesize }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.downloadSpeed">Download Speed</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.downloadSpeed }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.downloadEta">Download Eta</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.downloadEta }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.nodeIndex">Node Index</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.nodeIndex }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.status">Status</span></dt>
+          <dd>
+            <span [jhiTranslate]="'beatStreamApp.DownloadStatus.' + (taskNodeRef.status ?? 'null')">{{
+              {
+                null: '',
+                CONVERSION: 'CONVERSION',
+                PENDING: 'PENDING',
+                SCHEDULED: 'SCHEDULED',
+                IN_PROGRESS: 'IN_PROGRESS',
+                COMPLETED: 'COMPLETED',
+                FAILED: 'FAILED',
+                PAUSED: 'PAUSED',
+              }[taskNodeRef.status ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.type">Type</span></dt>
+          <dd>
+            <span [jhiTranslate]="'beatStreamApp.DownloadType.' + (taskNodeRef.type ?? 'null')">{{
+              {
+                null: '',
+                FILE: 'FILE',
+                AUDIO: 'AUDIO',
+                VIDEO: 'VIDEO',
+                AUDIO_PLAYLIST: 'AUDIO_PLAYLIST',
+                VIDEO_PLAYLIST: 'VIDEO_PLAYLIST',
+                FILE_PLAYLIST: 'FILE_PLAYLIST',
+              }[taskNodeRef.type ?? 'null']
+            }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.failCount">Fail Count</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.failCount }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.retryCount">Retry Count</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.retryCount }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.maxRetryCount">Max Retry Count</span></dt>
+          <dd>
+            <span>{{ taskNodeRef.maxRetryCount }}</span>
+          </dd>
+          <dt><span jhiTranslate="beatStreamApp.taskNode.parentTask">Parent Task</span></dt>
+          <dd>
+            @if (taskNode()!.parentTask) {
+              <div>
+                <a [routerLink]="['/task-node', taskNode()!.parentTask?.id, 'view']">{{ taskNodeRef.parentTask?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/task-node', taskNodeRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>

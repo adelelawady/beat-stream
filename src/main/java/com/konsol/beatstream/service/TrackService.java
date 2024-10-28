@@ -76,7 +76,7 @@ public interface TrackService {
      * @param playlistId selected playlist
      * @return track created
      */
-    Track createTrack(String refId, String refType, String playlistId);
+    Track createTrack(String refId, String refType, String playlistId, String ownerId);
 
     Track connectTrackToAudioFile(String trackId, String filePth);
 
