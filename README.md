@@ -1,10 +1,42 @@
-🎶 BeatStream
+
+
+# 🎶 BeatStream
+
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/b83cf4a8-0c56-4943-8399-7bf039b4edba" alt="Release Image" width="150"/>
+</div>
+
+
+
+
+
 
 BeatStream is a powerful music streaming and management application built using **JHipster** and Java. It allows users to download tracks and playlists from popular platforms like YouTube, SoundCloud, and Spotify. BeatStream also lets you upload your own songs, create a personalized library of tracks and playlists, and manage your music collection seamlessly. 🎧
 
+
+[DOWNLOAD RELEASE 2 BETA ](https://github.com/adelelawady/beat-stream/releases/download/2.0.0.0/BeatStream.2.0.Beta.exe)
+
+
+<div align="center">
+  
+  ### Overview of BeatStream 🎶
+  <img width="800" alt="Overview Screenshot" src="https://github.com/user-attachments/assets/9a7475d7-f5f6-4d3e-a629-b57a7176f8d3">
+  <br><br>
+
+  ### Full Library Management 📚
+  <img width="800" alt="Library Management Screenshot" src="https://github.com/user-attachments/assets/ad1c80c1-2425-40d0-8c15-c76205b3e551">
+  <br><br>
+
+  ### Download Progress Tracking 📥
+  <img width="800" alt="Download Tracking Screenshot" src="https://github.com/user-attachments/assets/b8acdb77-a9e0-43f2-b837-ff11231283d7">
+  
+</div>
+
 ## Features
 
-- 📥 **Download Music:** Easily download tracks and playlists from YouTube, SoundCloud, and Spotify.
+
+- 📥 **Download Music:** Easily download tracks and playlists from YouTube ![youtube](https://github.com/user-attachments/assets/780e3019-56ed-43b5-aa62-c0d6ff2cf1c6), SoundCloud ![soundcloud](https://github.com/user-attachments/assets/dfdda467-e73f-4236-b8b3-f2a64dada9ee), and Spotify   <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="Release Image" width="32"/>
+
 - 📤 **Upload Your Own Songs:** Add your personal music tracks to your library.
 - 📚 **Library Management:** Create and manage a comprehensive library of songs and playlists.
 - 📊 **Download Tracking:** Keep track of your downloads, including their progress and status.
@@ -20,7 +52,8 @@ BeatStream is built using:
 - **JHipster** for rapid development and scaffolding.
 - **Angular** (if applicable) for the front end.
 - **MongoDb** (or your preferred database) for data persistence.
-
+- **electron** For Windows APP
+- 
 ## Requirements
 
 To run BeatStream, you will need:
@@ -38,8 +71,7 @@ To run BeatStream, you will need:
    ```bash
    git clone https://github.com/adelelawady/beatstream.git
    cd beatstream
-   2. run
-      ./mvnw
+   ./mvnw
    ```
 
 # Usage
@@ -59,6 +91,13 @@ For API documentation, visit http://localhost:8080/swagger-ui/.
 # License
 
 📝 This project is licensed under the MIT License - see the LICENSE file for details.
+
+
+> **Important Note on Spotify Downloads**:  
+> The BeatStream app provides a **limited integration with Spotify** that allows users to download songs by **grabbing the song title from Spotify and searching for it on YouTube**.  
+> - **Single-Track Limitation**: Downloads are currently limited to one song per request for any Spotify track.  
+> - **Educational Use Only**: This functionality is designed for **educational and personal research purposes** only. BeatStream aims to serve as a **learning tool** for those interested in understanding how multimedia streaming technologies work, promoting digital literacy, and encouraging responsible, ethical use of software.
+>
 
 # beatStream
 
