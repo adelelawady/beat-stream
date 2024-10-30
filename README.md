@@ -1,3 +1,65 @@
+🎶 BeatStream
+
+BeatStream is a powerful music streaming and management application built using **JHipster** and Java. It allows users to download tracks and playlists from popular platforms like YouTube, SoundCloud, and Spotify. BeatStream also lets you upload your own songs, create a personalized library of tracks and playlists, and manage your music collection seamlessly. 🎧
+
+## Features
+
+- 📥 **Download Music:** Easily download tracks and playlists from YouTube, SoundCloud, and Spotify.
+- 📤 **Upload Your Own Songs:** Add your personal music tracks to your library.
+- 📚 **Library Management:** Create and manage a comprehensive library of songs and playlists.
+- 📊 **Download Tracking:** Keep track of your downloads, including their progress and status.
+- 🔄 **Task Downloads:** Queue multiple downloads and manage them efficiently.
+- 🛠️ **Powerful Tools:** Utilizes **yt-dl** for downloading, **ffmpeg** for audio processing, and **ChromeDriver** for web automation.
+
+## Technologies Used
+
+BeatStream is built using:
+
+- **Java** for the backend.
+- **Spring Boot** for building the application.
+- **JHipster** for rapid development and scaffolding.
+- **Angular** (if applicable) for the front end.
+- **MongoDb** (or your preferred database) for data persistence.
+
+## Requirements
+
+To run BeatStream, you will need:
+
+- ☕ Java Development Kit (JDK) 11 or later
+- 🎥 **yt-dl:** A command-line program to download videos from YouTube and other sites.
+- 🎵 **ffmpeg:** A tool to handle multimedia files and streams.
+- 🌐 **ChromeDriver:** For automating Chrome browser actions.
+- **Node.js** and **npm**
+- 🐱‍🏍 **MongoDB:** Ensure that you have MongoDB running, as BeatStream uses it for data storage.
+
+## Installation
+
+1. 🛠️ **Clone the repository:**
+   ```bash
+   git clone https://github.com/adelelawady/beatstream.git
+   cd beatstream
+   2. run
+      ./mvnw
+   ```
+
+# Usage
+
+🚀 Access the application:
+Open your web browser and navigate to http://localhost:8080.
+📖 Follow the on-screen instructions to download tracks, upload songs, and manage your library.
+
+# API Documentation
+
+For API documentation, visit http://localhost:8080/swagger-ui/.
+
+# Contributing
+
+🤝 Contributions are welcome! If you have suggestions for improvements or new features, feel free to fork the repository and submit a pull request.
+
+# License
+
+📝 This project is licensed under the MIT License - see the LICENSE file for details.
+
 # beatStream
 
 This application was generated using JHipster 8.7.1, you can find documentation and help at [https://www.jhipster.tech/documentation-archive/v8.7.1](https://www.jhipster.tech/documentation-archive/v8.7.1).
@@ -67,7 +129,7 @@ JHipster ships with PWA (Progressive Web App) support, and it's turned off by de
 The service worker initialization code is disabled by default. To enable it, uncomment the following code in `src/main/webapp/app/app.config.ts`:
 
 ```typescript
-ServiceWorkerModule.register('ngsw-worker.js', { enabled: false }),
+ServiceWorkerModule.register('ngsw-worker.js', { enabled: false });
 ```
 
 ### Managing dependencies
@@ -271,3 +333,73 @@ To configure CI for your project, run the ci-cd sub-generator (`jhipster ci-cd`)
 [Leaflet]: https://leafletjs.com/
 [DefinitelyTyped]: https://definitelytyped.org/
 [Angular CLI]: https://cli.angular.io/
+
+### Angular Core Libraries
+
+- **@angular/common**: Core common utilities 🌐, includes common directives like NgIf and NgFor, as well as pipes for handling dates, currency, and more.
+
+- **@angular/compiler**: Essential for Angular template compilation 🛠️, allowing HTML and Angular directives to render as interactive elements.
+
+- **@angular/core**: The heart of Angular's framework 🧩, including essential services and modules.
+
+- **@angular/forms**: Handles forms and form validation 📝, managing both reactive and template-driven forms.
+
+- **@angular/localize**: Localization support 🌍, enabling the app to support multiple languages.
+
+- **@angular/platform-browser** and **@angular/platform-browser-dynamic**: Provide DOM interactions 🖱️ and template compilation on the browser.
+
+- **@angular/router**: Routing and navigation 🧭, handling URL routing for a single-page application structure.
+
+### Capacitor Plugins
+
+- **@capacitor/android**, **@capacitor/cli**, **@capacitor/core**, **@capacitor/ios**: Facilitate mobile functionality for both iOS and Android 📱, enabling native functionality access, like file storage, notifications, and more.
+
+### FontAwesome Libraries
+
+- **@fortawesome/angular-fontawesome**: Angular component library for FontAwesome icons 🎨, allowing easy integration of scalable icons.
+
+- **@fortawesome/fontawesome-svg-core** and **@fortawesome/free-solid-svg-icons**: Core FontAwesome SVG support 🖼️, providing a vast collection of icons for UI components.
+
+### Translation and Localization
+
+- **@ngx-translate/core**: Core translation module 🌐, enabling dynamic translation handling.
+
+- **@ngx-translate/http-loader**: Allows loading translation files via HTTP requests 📂, making it simple to manage and update language files.
+
+### UI Frameworks
+
+- **@ng-bootstrap/ng-bootstrap**: Integrates Bootstrap into Angular 🖌️, enabling styled components like modals, alerts, and accordions.
+
+- **bootstrap** and **bootswatch**: Bootstrap library and themes 🎨, providing pre-designed styles and UI components.
+
+- **@popperjs/core** and **popper.js**: Handle positioning of tooltips and pop-ups 🗂️, essential for creating interactive UI elements.
+
+### File Handling
+
+- **ngx-file-drop**: Allows drag-and-drop file upload functionality 📥, enabling users to upload files by dragging them into a specified area.
+
+### Media Playback
+
+- **ngx-plyr** and **plyr**: Video and audio player support 🎶, providing customizable and lightweight media player features.
+
+### Utilities and Functional Libraries
+
+- **dayjs**: Lightweight date library 🗓️, ideal for date and time manipulation.
+
+- **jquery**: General DOM manipulation library ✨, enhancing the functionality of traditional JavaScript.
+
+- **rxjs**: Reactive programming support 🔄, offering observables that handle asynchronous data streams.
+
+- **tslib**: Utility library for TypeScript 🔧, minimizing bundle size and supporting helper functions.
+
+- **zone.js**: Execution context manager 🔍, crucial for handling async operations and change detection in Angular.
+
+### Infinite Scrolling
+
+- **ngx-infinite-scroll**: Provides infinite scroll functionality 🔄, enabling content to load dynamically as the user scrolls.
+
+### WebSocket and Real-time Communication
+
+- **@stomp/rx-stomp**: Manages STOMP messaging over WebSockets 🔗, allowing real-time data communication.
+
+- **sockjs-client**: Provides a WebSocket fallback 🌐, maintaining connection stability even when WebSocket isn’t supported.

@@ -143,6 +143,25 @@ paths:
           in: query
           name: playlistId
           required: true
+  /track/update:
+    post:
+      summary: ''
+      operationId: updateTrack
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+      tags:
+        - track
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TrackUpdate'
 components:
   responses:
     Problem:
@@ -298,6 +317,26 @@ components:
           type: string
           x-stoplight:
             id: jcyhyzh94h5i1
+    TrackUpdate:
+      title: TrackUpdate
+      x-stoplight:
+        id: 4nhwjxra5r0cm
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          x-stoplight:
+            id: n3y7gpmpca1ej
+        playlists:
+          type: array
+          x-stoplight:
+            id: ecsf3zuu31iqc
+          items:
+            x-stoplight:
+              id: ggc2leewco9ic
+            type: string
 security:
   - jwt: []
   - basic: []

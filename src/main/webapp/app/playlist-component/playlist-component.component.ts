@@ -11,6 +11,7 @@ import { AudioService } from 'app/shared/service/audio.service';
 import { FileSystemDirectoryEntry, FileSystemFileEntry, NgxFileDropEntry, NgxFileDropModule } from 'ngx-file-drop';
 import { timer } from 'rxjs';
 import { TaskNodeDownloadService } from 'app/shared/service/TaskNodeDownload.service';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 
 @Component({
   selector: 'jhi-playlist-component',
@@ -26,11 +27,15 @@ import { TaskNodeDownloadService } from 'app/shared/service/TaskNodeDownload.ser
 })
 export class PlaylistComponentComponent implements OnChanges, OnInit {
   showModal = false; // Track whether the modal is visible
+  selectedUpdateTrack: any;
+  selectedUpdateTrackTitle = '';
   showYoutubeModal = false;
   showYoutubeDownloadModal = false;
+  showTrackMoveModel = false;
   showConfirmation = false;
   enableStatus = true;
   selectedTrack: any;
+  playlists: any[] = [];
   statusList: string[] = [
     'Initializing download...',
     'Connecting to server...',
@@ -68,17 +73,16 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   trackBeatStreamService = inject(TrackBeatStreamService);
   uploadForm!: FormGroup;
   resourceAPIUrl = this.trackBeatStreamService.applicationConfigService.getEndpointFor('api/audio');
-
+  selectedPlaylists: Set<string> = new Set<string>();
   files: any[] = [];
 
   fileUploadProgress: Record<string, number> = {};
   uploadFinished = false;
   isUploading = false;
   uploadInProgress = false;
-
+  applicationConfigService = inject(ApplicationConfigService);
   playlistBeatStreamService = inject(PlaylistBeatStreamService);
   taskListSerivce = inject(TaskNodeDownloadService);
-
   constructor(
     private formBuilder: FormBuilder,
     private http: HttpClient,
@@ -208,7 +212,19 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   onCancel(): void {
     this.showModal = false;
   }
+  // Toggle selection for a playlist ID
+  toggleSelection(playlistId: string): void {
+    if (this.selectedPlaylists.has(playlistId)) {
+      this.selectedPlaylists.delete(playlistId);
+    } else {
+      this.selectedPlaylists.add(playlistId);
+    }
+  }
 
+  // Get the array of selected playlist IDs in the format [id, id, ...]
+  getSelectedPlaylistIds(): string[] {
+    return Array.from(this.selectedPlaylists);
+  }
   public dropped(files: NgxFileDropEntry[]): void {
     this.files = files;
     for (const droppedFile of files) {
@@ -282,6 +298,7 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     if (videoType === 'SoundCloud') {
       videoId = encodeURIComponent(this.youtubeVideoUrl);
     }
+
     if (videoType === 'youtubeList') {
       videoId = encodeURIComponent(this.youtubeVideoUrl);
       const userConfirmed = confirm('Are you sure you want Download Whole Playlist ? [ Ok to proceed cancel to download video only ]');
@@ -300,10 +317,10 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
       }
     }
 
-    // if (this.youtubeVideoUrl.includes('spotify')) {
-    //   videoType='spotify';
-    //   videoId = encodeURIComponent(this.youtubeVideoUrl);
-    // }
+    if (this.youtubeVideoUrl.includes('spotify')) {
+      videoType = 'spotify';
+      videoId = encodeURIComponent(this.youtubeVideoUrl);
+    }
 
     if (videoId) {
       // encodeURIComponent(url);
@@ -381,6 +398,17 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
     return colors[index];
   }
 
+  deleteTrack(track: any): void {
+    this.trackBeatStreamService.delete(track.id).subscribe(() => {
+      const userConfirmed = confirm(`Are you sure you want To Delete ${track.title} [track] ?`);
+      if (userConfirmed) {
+        this.play(null);
+        this.loadPlaylist(this.playlist.id);
+      } else {
+        return;
+      }
+    });
+  }
   openDeleteConfirmation(): void {
     this.showConfirmation = true;
   }
@@ -394,5 +422,49 @@ export class PlaylistComponentComponent implements OnChanges, OnInit {
   // Close the confirmation popup
   closeDeleteConfirmation(): void {
     this.showConfirmation = false;
+  }
+
+  showMoveTrackModel(track: any): void {
+    this.play(null);
+    this.selectedUpdateTrackTitle = track.title;
+    this.selectedUpdateTrack = track;
+    // this.selectedPlaylists=track.playlists;
+    this.selectedPlaylists = new Set(track.playlists);
+    this.playlistBeatStreamService.getAllPlaylists().subscribe(playlists => {
+      this.playlists = playlists.body;
+      this.selectedPlaylists.add(this.playlist.id);
+      this.showTrackMoveModel = true;
+    });
+  }
+
+  downloadTrack(track: any): void {
+    this.http.get(this.applicationConfigService.getEndpointFor(`api/track/play/${track.id}`), { responseType: 'blob' }).subscribe(
+      blob => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = String(track.title) + '.mp3';
+        link.click();
+        window.URL.revokeObjectURL(downloadUrl);
+      },
+      error => {
+        console.error('Download error:', error);
+      },
+    );
+  }
+
+  updateSelectedTrackSelectedPlaylistIds(): void {
+    this.play(null);
+    const trackUpdate = {
+      id: this.selectedUpdateTrack.id,
+      title: this.selectedUpdateTrackTitle,
+      playlists: this.getSelectedPlaylistIds(),
+    };
+    this.trackBeatStreamService.updateTrack(trackUpdate).subscribe(res => {
+      this.showTrackMoveModel = false;
+      this.selectedPlaylists = new Set<string>();
+      this.loadPlaylist(this.playlist.id);
+      this.selectedUpdateTrackTitle = '';
+    });
   }
 }

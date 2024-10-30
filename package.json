@@ -1,6 +1,6 @@
 {
   "name": "beat-stream",
-  "version": "0.0.1-SNAPSHOT",
+  "version": "2.0.0.0",
   "private": true,
   "description": "Description for Beat Stream",
   "license": "UNLICENSED",
@@ -80,6 +80,10 @@
     "@angular/platform-browser": "18.2.5",
     "@angular/platform-browser-dynamic": "18.2.5",
     "@angular/router": "18.2.5",
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2",
+    "@capacitor/ios": "^6.1.2",
     "@fortawesome/angular-fontawesome": "0.15.0",
     "@fortawesome/fontawesome-svg-core": "6.6.0",
     "@fortawesome/free-solid-svg-icons": "6.6.0",

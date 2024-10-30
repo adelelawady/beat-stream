@@ -23,6 +23,7 @@ import NavbarItem from './navbar-item.model';
 })
 export default class NavbarComponent implements OnInit {
   inProduction?: boolean;
+  showAboutMePopUp = false;
   isNavbarCollapsed = signal(true);
   languages = LANGUAGES;
   openAPIEnabled?: boolean;

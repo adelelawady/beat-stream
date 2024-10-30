@@ -1,5 +1,6 @@
 package com.konsol.beatstream.web.rest;
 
+import com.konsol.beatstream.config.AppSettingsConfiguration;
 import com.konsol.beatstream.repository.TaskNodeRepository;
 import com.konsol.beatstream.service.TaskNodeService;
 import com.konsol.beatstream.service.dto.TaskNodeDTO;
@@ -126,7 +127,7 @@ public class TaskNodeResource {
         if (!taskNodeRepository.existsById(id)) {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
-
+        taskNodeDTO.setCanRetry(true);
         Optional<TaskNodeDTO> result = taskNodeService.partialUpdate(taskNodeDTO);
 
         return ResponseUtil.wrapOrNotFound(

@@ -40,6 +40,32 @@
     </div>
   </div>
 </div>
+
+<!-- Modal -->
+<div class="modal" *ngIf="showTrackMoveModel">
+  <div class="modal-content">
+    <span class="close" (click)="showTrackMoveModel = false">&times;</span>
+    <div class="playlist-container">
+      <h2>
+        Select play lists to add track into [
+        <h4>{{ this.selectedUpdateTrackTitle }}</h4>
+        ]
+      </h2>
+      <input style="width: 100%" type="text" [(ngModel)]="selectedUpdateTrackTitle" placeholder="Track Title" />
+      <div class="playlist-card" *ngFor="let playlist of playlists">
+        <label class="checkbox-label">
+          <input type="checkbox" (change)="toggleSelection(playlist.id)" [checked]="selectedPlaylists.has(playlist.id)" />
+          <span class="checkbox-custom"></span>
+          <span class="playlist-name">{{ playlist.title }}</span>
+        </label>
+      </div>
+      <div class="actions">
+        <button (click)="updateSelectedTrackSelectedPlaylistIds()">UpdateTrack</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Modal -->
 <div class="modal" *ngIf="showConfirmation">
   <div class="modal-content">
@@ -184,6 +210,10 @@
                       </div>
 
                       <div class="tracks__heading__popularity">
+                        <i class="icon ion-android-options"></i>
+                      </div>
+
+                      <div class="tracks__heading__popularity">
                         <i class="icon ion-play"></i>
                       </div>
                     </div>
@@ -218,6 +248,13 @@
 
                         <i *ngIf="!track.refType" class="icon ion-upload"></i>
                       </div>
+
+                      <div class="track__popularity">
+                        <i (click)="deleteTrack(track)" class="icon ion-android-delete"></i>
+                        <i (click)="showMoveTrackModel(track)" class="icon ion-arrow-move"></i>
+                        <i (click)="downloadTrack(track)" class="icon ion-ios-download"></i>
+                      </div>
+
                       <div class="track__popularity">
                         <span>{{ track.playCount }}</span>
                       </div>

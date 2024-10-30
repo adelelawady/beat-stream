@@ -63,7 +63,7 @@ public class SchedulerHandler {
 
     @Scheduled(fixedRate = 30000) // A IN_PROGRESS task took to long 15 minute kill it
     public void checkAndKillProcessInProgressLongTasks() {
-        List<TaskNode> tasks = downloadTaskRepository.findByStatusIn(List.of(DownloadStatus.IN_PROGRESS));
+        List<TaskNode> tasks = downloadTaskRepository.findByStatusIn(List.of(DownloadStatus.IN_PROGRESS, DownloadStatus.CONVERSION));
         for (TaskNode task : tasks) {
             if (hasTaskExceededTime(task) && !task.getType().equals(DownloadType.AUDIO_PLAYLIST)) {
                 if (task.isCanRetry()) {

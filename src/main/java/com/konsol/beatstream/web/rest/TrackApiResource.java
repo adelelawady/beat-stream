@@ -3,10 +3,16 @@ package com.konsol.beatstream.web.rest;
 import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
 
 import com.konsol.beatstream.domain.BeatStreamFile;
+import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.domain.Track;
+import com.konsol.beatstream.repository.PlaylistRepository;
 import com.konsol.beatstream.repository.TrackRepository;
 import com.konsol.beatstream.service.BeatStreamFileService;
 import com.konsol.beatstream.service.TrackService;
+import com.konsol.beatstream.service.UserService;
+import com.konsol.beatstream.service.api.dto.TrackUpdate;
+import com.konsol.beatstream.service.mapper.TrackMapper;
+import com.konsol.beatstream.service.mapper.TrackMapperImpl;
 import com.konsol.beatstream.web.api.TrackApiDelegate;
 import java.io.File;
 import java.io.IOException;
@@ -37,6 +43,15 @@ public class TrackApiResource implements TrackApiDelegate {
 
     @Autowired
     private TrackRepository trackRepository;
+
+    @Autowired
+    private TrackMapper trackMapper;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private PlaylistRepository playlistRepository;
 
     @Override
     public ResponseEntity<Resource> playTrack(String id, String rangeHeader) {
@@ -190,5 +205,42 @@ public class TrackApiResource implements TrackApiDelegate {
                     // Implement other necessary methods if needed...
                 }
             );
+    }
+
+    @Override
+    public ResponseEntity<com.konsol.beatstream.service.api.dto.Track> updateTrack(TrackUpdate trackUpdate) {
+        Optional<Track> track = trackService.findOneDomain(trackUpdate.getId());
+
+        if (track.isEmpty()) {
+            return ResponseEntity.ok().build();
+        }
+
+        if (!userService.getCurrentUser().getId().equals(track.get().getOwnerId())) {
+            throw new RuntimeException("Must Be Updated By It's Owner Only");
+        }
+
+        Track trackCountUpdate = track.get();
+
+        // update title
+        if (trackUpdate.getTitle() != null) {
+            trackCountUpdate.setTitle(trackUpdate.getTitle());
+        }
+
+        // update playlists
+        if (trackUpdate.getPlaylists() != null && !trackUpdate.getPlaylists().isEmpty()) {
+            trackUpdate
+                .getPlaylists()
+                .forEach(playlist -> {
+                    Optional<Playlist> playlist1 = playlistRepository.findById(playlist);
+                    if (playlist1.isPresent() && playlist1.get().getOwnerId().equals(userService.getCurrentUser().getId())) {
+                        Playlist foundPlaylist = playlist1.get();
+                        foundPlaylist.addTrack(trackCountUpdate);
+                        playlistRepository.save(foundPlaylist);
+                        trackCountUpdate.getPlaylists().add(foundPlaylist);
+                    }
+                });
+        }
+
+        return ResponseEntity.ok(trackMapper.TrackIntoTrackDTO(trackRepository.save(trackCountUpdate)));
     }
 }

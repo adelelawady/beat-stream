@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">beat-stream</string>
+    <string name="title_activity_main">beat-stream</string>
+    <string name="package_name">com.konsol.beatstream</string>
+    <string name="custom_url_scheme">com.konsol.beatstream</string>
+</resources>

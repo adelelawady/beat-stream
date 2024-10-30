@@ -1,3 +1,28 @@
+<!-- Modal -->
+<div style="background: transparent" class="modal" *ngIf="showAboutMePopUp">
+  <div style="background: transparent; border: none; align-items: center" class="modal-content">
+    <div class="card">
+      <span class="close" style="text-align: right" (click)="showAboutMePopUp = false">&times;</span>
+      <h2>Adel ali</h2>
+      <p>A passionate programmer with a knack for Java and C#, developed an innovative music download library app. 😊</p>
+
+      <!-- Social Icons -->
+      <div class="social-links">
+        <a href="mailto:adel50ali50@gmail.com"><i class="icon ion-android-mail"></i></a>
+        <a href="https://github.com/adelelawady" target="_blank"><i class="icon ion-social-github"></i></a>
+        <a href="https://www.linkedin.com/in/adelelawady/" target="_blank"><i class="icon ion-social-linkedin"></i></a>
+      </div>
+
+      <!-- Music App Info -->
+      <div class="music-app">
+        <h3>BeatStream App:</h3>
+        <p>🎵 Download music from YouTube, SoundCloud, and curated playlists.</p>
+        <p>🎼 Upload your own tracks, manage playlists, and create personalized music libraries.</p>
+        <p>🎧 Play music online and offline with seamless integration for all your favorite platforms.</p>
+      </div>
+    </div>
+  </div>
+</div>
 <nav data-cy="navbar" class="navbar navbar-dark navbar-expand-md bg-primary">
   <div class="container-fluid">
     <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
@@ -18,6 +43,26 @@
     </a>
     <div class="navbar-collapse collapse" id="navbarResponsive" [ngbCollapse]="isNavbarCollapsed()">
       <ul class="navbar-nav ms-auto">
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a class="nav-link" routerLink="/" (click)="showAboutMePopUp = true">
+            <span>
+              <i class="icon ion-information-circled"></i>
+              <span jhiTranslate="global.menu.aboutme">AboutMe</span>
+            </span>
+          </a>
+        </li>
+        <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a
+            class="nav-link"
+            routerLink="/task-node"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }"
+            (click)="collapseNavbar()"
+          >
+            <i class="icon ion-ios-cloud-download"></i>
+            <span>Downloads</span>
+          </a>
+        </li>
         <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
           <a class="nav-link" routerLink="/" (click)="collapseNavbar()">
             <span>

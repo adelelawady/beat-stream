@@ -63,13 +63,12 @@
       <div id="download-progress-popup">
         <h3>Download QUEUE</h3>
         <div>
-          @let accountRef = account();
           <div
             *ngFor="let item of taskList"
             class="download-item"
             [ngStyle]="{ 'background-color': item.type === 'AUDIO_PLAYLIST' ? 'blueviolet' : '#282828' }"
           >
-            <div *ngIf="item.ownerId === accountRef?.id">
+            <div>
               <div class="file-name" style="overflow: hidden">{{ item.taskName }}</div>
               <div class="file-name">Status : {{ item.status }}</div>
               <div class="file-name">{{ item.downloadFilesize }} | Speed: {{ item.downloadSpeed }} | ETA: {{ item.downloadEta }}</div>

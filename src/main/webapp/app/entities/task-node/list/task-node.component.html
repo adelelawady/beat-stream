@@ -1,4 +1,4 @@
-<div>
+<div style="padding: 30px">
   <h2 id="page-heading" data-cy="TaskNodeHeading">
     <span jhiTranslate="beatStreamApp.taskNode.home.title">Task Nodes</span>
 
@@ -6,16 +6,6 @@
       <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
         <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
         <span jhiTranslate="beatStreamApp.taskNode.home.refreshListLabel">Refresh list</span>
-      </button>
-
-      <button
-        id="jh-create-entity"
-        data-cy="entityCreateButton"
-        class="btn btn-primary jh-create-entity create-task-node"
-        [routerLink]="['/task-node/new']"
-      >
-        <fa-icon icon="plus"></fa-icon>
-        <span jhiTranslate="beatStreamApp.taskNode.home.createLabel">Create a new Task Node</span>
       </button>
     </div>
   </h2>
@@ -35,13 +25,6 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [sortState]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
-              <div class="d-flex">
-                <span jhiTranslate="global.field.id">ID</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="referenceType">
               <div class="d-flex">
                 <span jhiTranslate="beatStreamApp.taskNode.referenceType">Reference Type</span>
@@ -63,20 +46,7 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="taskLog">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.taskLog">Task Log</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="trackId">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.trackId">Track Id</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="scheduledStartTime">
               <div class="d-flex">
                 <span jhiTranslate="beatStreamApp.taskNode.scheduledStartTime">Scheduled Start Time</span>
@@ -84,41 +54,7 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="startDelayMinutes">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.startDelayMinutes">Start Delay Minutes</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="startDelayHours">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.startDelayHours">Start Delay Hours</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="elapsedHours">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.elapsedHours">Elapsed Hours</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="elapsedMinutes">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.elapsedMinutes">Elapsed Minutes</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="progressPercentage">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.progressPercentage">Progress Percentage</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="downloadFilesize">
               <div class="d-flex">
                 <span jhiTranslate="beatStreamApp.taskNode.downloadFilesize">Download Filesize</span>
@@ -126,27 +62,7 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="downloadSpeed">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.downloadSpeed">Download Speed</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="downloadEta">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.downloadEta">Download Eta</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="nodeIndex">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.nodeIndex">Node Index</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col" jhiSortBy="status">
               <div class="d-flex">
                 <span jhiTranslate="beatStreamApp.taskNode.status">Status</span>
@@ -161,42 +77,13 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="failCount">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.failCount">Fail Count</span>
 
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="retryCount">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.retryCount">Retry Count</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="maxRetryCount">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.maxRetryCount">Max Retry Count</span>
-
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="parentTask.id">
-              <div class="d-flex">
-                <span jhiTranslate="beatStreamApp.taskNode.parentTask">Parent Task</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           @for (taskNode of taskNodes; track trackId(taskNode)) {
             <tr data-cy="entityTable">
-              <td>
-                <a [routerLink]="['/task-node', taskNode.id, 'view']">{{ taskNode.id }}</a>
-              </td>
               <td [jhiTranslate]="'beatStreamApp.ReferenceType.' + (taskNode.referenceType ?? 'null')">
                 {{
                   { null: '', UPLOAD: 'UPLOAD', YOUTUBE: 'YOUTUBE', SOUNDCLOUD: 'SOUNDCLOUD', SPOTIFY: 'SPOTIFY' }[
@@ -206,18 +93,10 @@
               </td>
               <td>{{ taskNode.referenceId }}</td>
               <td>{{ taskNode.taskName }}</td>
-              <td>{{ taskNode.taskLog }}</td>
-              <td>{{ taskNode.trackId }}</td>
               <td>{{ taskNode.scheduledStartTime | formatMediumDatetime }}</td>
-              <td>{{ taskNode.startDelayMinutes }}</td>
-              <td>{{ taskNode.startDelayHours }}</td>
-              <td>{{ taskNode.elapsedHours }}</td>
-              <td>{{ taskNode.elapsedMinutes }}</td>
-              <td>{{ taskNode.progressPercentage }}</td>
+
               <td>{{ taskNode.downloadFilesize }}</td>
-              <td>{{ taskNode.downloadSpeed }}</td>
-              <td>{{ taskNode.downloadEta }}</td>
-              <td>{{ taskNode.nodeIndex }}</td>
+
               <td [jhiTranslate]="'beatStreamApp.DownloadStatus.' + (taskNode.status ?? 'null')">
                 {{
                   {
@@ -245,28 +124,23 @@
                   }[taskNode.type ?? 'null']
                 }}
               </td>
-              <td>{{ taskNode.failCount }}</td>
-              <td>{{ taskNode.retryCount }}</td>
-              <td>{{ taskNode.maxRetryCount }}</td>
-              <td>
-                @if (taskNode.parentTask) {
-                  <div>
-                    <a [routerLink]="['/task-node', taskNode.parentTask.id, 'view']">{{ taskNode.parentTask.id }}</a>
-                  </div>
-                }
-              </td>
+
               <td class="text-end">
                 <div class="btn-group">
                   <a [routerLink]="['/task-node', taskNode.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.view">View</span>
                   </a>
-
-                  <a [routerLink]="['/task-node', taskNode.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
-                    <fa-icon icon="pencil-alt"></fa-icon>
-                    <span class="d-none d-md-inline" jhiTranslate="entity.action.edit">Edit</span>
-                  </a>
-
+                  <button
+                    *ngIf="taskNode.status === 'FAILED'"
+                    type="submit"
+                    (click)="retryTask(taskNode)"
+                    class="btn btn-warning btn-sm"
+                    data-cy="entityDeleteButton"
+                  >
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">retry</span>
+                  </button>
                   <button type="submit" (click)="delete(taskNode)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline" jhiTranslate="entity.action.delete">Delete</span>

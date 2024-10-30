@@ -10,6 +10,7 @@ export interface ITaskNode {
   taskName?: string | null;
   taskLog?: string | null;
   trackId?: number | null;
+  canRetry?: boolean | true;
   scheduledStartTime?: dayjs.Dayjs | null;
   startDelayMinutes?: number | null;
   startDelayHours?: number | null;

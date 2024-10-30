@@ -13,7 +13,7 @@ export interface Toast {
 })
 export class ToastService {
   private toasts: Toast[] = [];
-  private toastSubject = new BehaviorSubject<Toast[]>(this.toasts);
+  public toastSubject = new BehaviorSubject<Toast[]>(this.toasts);
 
   getToasts(): Observable<Toast[]> {
     return this.toastSubject.asObservable();

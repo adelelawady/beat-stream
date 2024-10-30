@@ -1,5 +1,6 @@
 package com.konsol.beatstream.service.impl;
 
+import com.konsol.beatstream.config.AppSettingsConfiguration;
 import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.domain.TaskNode;
 import com.konsol.beatstream.domain.Track;
@@ -14,6 +15,7 @@ import com.konsol.beatstream.service.UserService;
 import com.konsol.beatstream.service.audioPlugins.SoundCloud.SoundCloudDownloader;
 import com.konsol.beatstream.service.audioPlugins.SoundCloud.SoundCloudPlaylistInfo;
 import com.konsol.beatstream.service.audioPlugins.Spotify.SpotifyDownloader;
+import com.konsol.beatstream.service.audioPlugins.Spotify.SpotifyPlaylistInfo;
 import com.konsol.beatstream.service.audioPlugins.youtube.YouTubePlaylistInfo;
 import com.konsol.beatstream.service.audioPlugins.youtube.YoutubeDownloader;
 import com.konsol.beatstream.service.dto.TaskNodeDTO;
@@ -54,6 +56,8 @@ public class TaskNodeServiceImpl implements TaskNodeService {
     private final TaskService taskService;
     private final UserService userService;
     private final SpotifyDownloader spotifyDownloader;
+    int retryScheduleTimeAfterSec = 10;
+    int defaultMaxRetryCount = 3;
 
     public TaskNodeServiceImpl(
         TaskNodeRepository taskNodeRepository,
@@ -75,6 +79,18 @@ public class TaskNodeServiceImpl implements TaskNodeService {
         this.taskService = taskService;
         this.userService = userService;
         this.spotifyDownloader = spotifyDownloader;
+
+        try {
+            retryScheduleTimeAfterSec = Integer.parseInt(
+                AppSettingsConfiguration.getSettings().getProperty("beatstream.settings.download.failed.retry.schedule.time", "10")
+            );
+            defaultMaxRetryCount = Integer.parseInt(
+                AppSettingsConfiguration.getSettings().getProperty("beatstream.settings.download.failed.retry.count", "3")
+            );
+        } catch (Exception e) {
+            retryScheduleTimeAfterSec = 10;
+            defaultMaxRetryCount = 3;
+        }
     }
 
     @Override
@@ -100,6 +116,8 @@ public class TaskNodeServiceImpl implements TaskNodeService {
         return taskNodeRepository
             .findById(taskNodeDTO.getId())
             .map(existingTaskNode -> {
+                existingTaskNode.setCanRetry(true);
+                existingTaskNode.setScheduledStartTime(Instant.now().plusSeconds(200));
                 taskNodeMapper.partialUpdate(existingTaskNode, taskNodeDTO);
 
                 return existingTaskNode;
@@ -111,7 +129,7 @@ public class TaskNodeServiceImpl implements TaskNodeService {
     @Override
     public Page<TaskNodeDTO> findAll(Pageable pageable) {
         LOG.debug("Request to get all TaskNodes");
-        return taskNodeRepository.findAll(pageable).map(taskNodeMapper::toDto);
+        return taskNodeRepository.findAllByOrderByCreatedDateDesc(pageable).map(taskNodeMapper::toDto);
     }
 
     @Override
@@ -247,7 +265,7 @@ public class TaskNodeServiceImpl implements TaskNodeService {
             taskNode.incrementRetryCount();
             taskNode.setCanRetry(taskNode.getRetryCount().compareTo(taskNode.getMaxRetryCount()) < 0);
             if (taskNode.isCanRetry()) {
-                taskNode.setScheduledStartTime(Instant.now().plusSeconds(10));
+                taskNode.setScheduledStartTime(Instant.now().plusSeconds(retryScheduleTimeAfterSec));
                 taskNode.setStatus(DownloadStatus.SCHEDULED);
                 taskNodeRepository.save(taskNode);
                 taskService.sendTaskNodes();
@@ -304,19 +322,8 @@ public class TaskNodeServiceImpl implements TaskNodeService {
             throw new Exception("[Validate Playlist] Playlist not found");
         }
 
-        // Track track=validateTrack(taskNode);
-        // if (track==null){
-        // Track track1= trackService.createTrack(taskNode.getReferenceId(),taskNode.getReferenceType().toString().toString(),taskNode.getPlaylistId());
-        // taskNode.trackId(track1.getId());
-        // taskNode= taskNodeRepository.save(taskNode);
-        // }
-
         switch (taskNode.getReferenceType()) {
-            case UPLOAD -> {
-                //skip just create and validate track
-            }
             case SPOTIFY -> {
-                // not implemented yet
                 spotifyDownloader.AddSpotifySong(taskNode.getReferenceId(), taskNode.getPlaylistId(), taskNode, taskNode.getOwnerId());
             }
             case YOUTUBE -> {
@@ -339,11 +346,27 @@ public class TaskNodeServiceImpl implements TaskNodeService {
         }
 
         switch (taskNode.getReferenceType()) {
-            case UPLOAD -> {
-                //skip just create and validate track
-            }
             case SPOTIFY -> {
-                // not implemented yet
+                String playlistUrl = taskNode.getReferenceId(); // Replace with your YouTube playlist URL
+                SpotifyPlaylistInfo spotifyPlaylistInfo = new SpotifyPlaylistInfo();
+                SpotifyPlaylistInfo.PlaylistDetails details = spotifyPlaylistInfo.getPlaylistDetails(playlistUrl);
+                taskNode.setTaskName("[PLAYLIST_SPOTIFY] " + details.getTitle());
+                for (String trackId : details.getTrackUrls()) {
+                    TaskNode taskNodeChild = createTask(
+                        trackId,
+                        ReferenceType.SPOTIFY,
+                        trackId,
+                        taskNode.getPlaylistId(),
+                        null,
+                        DownloadType.AUDIO,
+                        0,
+                        taskNode.getOwnerId()
+                    );
+                    taskNodeChild.setParentTask(taskNode);
+                    taskNodeChild = taskNodeRepository.save(taskNodeChild);
+                    taskNode.getChildTasks().add(taskNodeChild);
+                    taskNodeRepository.save(taskNode);
+                }
             }
             case YOUTUBE -> {
                 String playlistUrl = taskNode.getReferenceId(); // Replace with your YouTube playlist URL
@@ -452,7 +475,7 @@ public class TaskNodeServiceImpl implements TaskNodeService {
         if (MaxRetryCount > 0) {
             taskNode.setMaxRetryCount(BigDecimal.valueOf(MaxRetryCount));
         } else {
-            taskNode.setMaxRetryCount(BigDecimal.valueOf(3));
+            taskNode.setMaxRetryCount(BigDecimal.valueOf(defaultMaxRetryCount));
         }
         return taskNodeRepository.save(taskNode);
     }

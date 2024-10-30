@@ -2,6 +2,7 @@ package com.konsol.beatstream.service.audioPlugins.youtube;
 
 import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
 
+import com.konsol.beatstream.config.AppSettingsConfiguration;
 import com.konsol.beatstream.domain.TaskNode;
 import com.konsol.beatstream.domain.Track;
 import com.konsol.beatstream.domain.User;
@@ -48,7 +49,7 @@ public class YoutubeDownloader {
     @Autowired
     ReferanceTrackHandler referanceTrackHandler;
 
-    String videoId = "9OSVh-4Jovc";
+    String videoId;
 
     @Autowired
     UserService userService;
@@ -63,8 +64,25 @@ public class YoutubeDownloader {
 
     private TaskNode taskNode = null;
     // Path to the yt-dlp.exe file
-    private final String YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
-    private final String FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
+    private String YTDLP_PATH;
+    private String FFMPEG_PATH;
+    private boolean enableDublicated = false;
+
+    public YoutubeDownloader() {
+        try {
+            YTDLP_PATH = AppSettingsConfiguration.getSettings()
+                .getProperty("beatstream.settings.plugins.yt-dl_path", startupPath + "\\plugins\\yt-dlp.exe");
+            FFMPEG_PATH = AppSettingsConfiguration.getSettings()
+                .getProperty("beatstream.settings.plugins.ffmpeg_path", startupPath + "\\plugins\\ffmpeg.exe");
+            enableDublicated = Boolean.parseBoolean(
+                AppSettingsConfiguration.getSettings().getProperty("beatstream.settings.youtube.duplicated.enabled", "false")
+            );
+        } catch (Exception e) {
+            enableDublicated = false;
+            YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
+            FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
+        }
+    }
 
     public void AddYoutubeVideo(String video_Id, String playlistId, TaskNode _taskNode, String ownerId) throws Exception {
         this.videoId = video_Id;
@@ -94,23 +112,34 @@ public class YoutubeDownloader {
             throw new Exception("YouTube Video Id Is: null");
         }
 
-        // if (trackRepository.findByRefIdAndRefTypeAndOwnerIdAndPlaylistsIn(videoId, "YOUTUBE", user.getId(),List.of(playlistId)).isPresent()) {
-        //   LOG.debug("YouTube Video already exists: " + videoId);
-        //    throw new Exception("YouTube Video already exists: " + videoId);
-        // } else {
-        Track track = trackService.createTrack(videoId, "YOUTUBE", playlistId, ownerId);
-        try {
-            if (taskNode != null) {
-                taskNode.setTrackId(track.getId());
-                taskNodeRepository.save(taskNode);
+        if (
+            !enableDublicated &&
+            trackRepository.findByRefIdAndRefTypeAndOwnerIdAndPlaylistsIn(videoId, "YOUTUBE", ownerId, List.of(playlistId)).isPresent()
+        ) {
+            LOG.debug("YouTube Video already exists: " + videoId);
+            taskService.sendClientMessage("Youtube music already exists: " + videoId);
+            throw new Exception("YouTube Video already exists: " + videoId);
+        } else {
+            Track track;
+            if (taskNode.getTrackId() == null || taskNode.getTrackId().isEmpty()) {
+                track = trackService.createTrack(videoId, "YOUTUBE", playlistId, ownerId);
+            } else {
+                Optional<Track> trackOptional = trackRepository.findById(taskNode.getTrackId());
+                track = trackOptional.orElseGet(() -> trackService.createTrack(videoId, "YOUTUBE", playlistId, ownerId));
             }
-            downloadYouTubeVideoAsMP3(videoUrl, outputPath, track);
-            taskService.sendTaskNodes();
-        } catch (Exception e) {
-            trackService.delete(track.getId());
-            throw e;
+
+            try {
+                if (taskNode != null) {
+                    taskNode.setTrackId(track.getId());
+                    taskNodeRepository.save(taskNode);
+                }
+                downloadYouTubeVideoAsMP3(videoUrl, outputPath, track);
+                taskService.sendTaskNodes();
+            } catch (Exception e) {
+                trackService.delete(track.getId());
+                throw e;
+            }
         }
-        // }
     }
 
     public void downloadYouTubeVideoAsMP3(String videoUrl, String outputPath, Track track) throws IOException, InterruptedException {

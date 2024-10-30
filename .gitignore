@@ -153,3 +153,6 @@ Desktop.ini
 /.nyc_output/
 rootFolder
 plugins
+output_folder
+mongodb
+output_folder

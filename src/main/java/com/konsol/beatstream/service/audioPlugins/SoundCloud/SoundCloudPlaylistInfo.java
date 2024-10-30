@@ -1,7 +1,9 @@
 package com.konsol.beatstream.service.audioPlugins.SoundCloud;
 
+import com.konsol.beatstream.config.AppSettingsConfiguration;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,20 +27,23 @@ import org.springframework.stereotype.Component;
 @Component
 public class SoundCloudPlaylistInfo {
 
+    String startupPath = Paths.get("").toAbsolutePath().toString();
+    String chromedriver;
+
+    public SoundCloudPlaylistInfo() {
+        try {
+            chromedriver = AppSettingsConfiguration.getSettings()
+                .getProperty("beatstream.settings.plugins.chromedriver_path", startupPath + "\\plugins\\chromedriver.exe");
+        } catch (Exception e) {
+            chromedriver = startupPath + "\\plugins\\chromedriver.exe";
+        }
+    }
+
     public PlaylistDetails getPlaylistDetails(String url) throws IOException {
         List<String> videoIdList = new ArrayList<>();
-        // String playlistUrl = "https://soundcloud.com/chargetogame8/sets/2024-mp3-mp3"; // Replace with your playlist URL
-        // Path to the ChromeDriver executable
-        System.setProperty(
-            "webdriver.chrome.driver",
-            "C:\\Users\\adel\\Downloads\\Compressed\\chromedriver-win64_2\\chromedriver-win64\\chromedriver.exe"
-        ); // Replace with your chromedriver path
 
-        // URL of the webpage to download
-        // Tag name to search for
-        // String tagName = "ytd-playlist-panel-video-renderer";  // Replace 'div' with any other tag you want to extract
+        System.setProperty("webdriver.chrome.driver", chromedriver);
 
-        // Setup Chrome options for headless mode (optional)
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless"); // Run in headless mode (without a GUI)
         options.addArguments("--disable-gpu");

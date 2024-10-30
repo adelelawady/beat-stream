@@ -2,6 +2,7 @@ package com.konsol.beatstream;
 
 import com.konsol.beatstream.config.ApplicationProperties;
 import com.konsol.beatstream.config.CRLFLogConverter;
+import com.konsol.beatstream.config.MyEnvironmentDatabaseListener;
 import jakarta.annotation.PostConstruct;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -69,7 +70,9 @@ public class BeatStreamApp {
      */
     public static void main(String[] args) {
         SpringApplication app = new SpringApplication(BeatStreamApp.class);
+
         DefaultProfileUtil.addDefaultProfile(app);
+        app.addListeners(new MyEnvironmentDatabaseListener());
         Environment env = app.run(args).getEnvironment();
         logApplicationStartup(env);
     }

@@ -1,4 +1,5 @@
-import { Component, NgZone, OnInit, inject } from '@angular/core';
+/* eslint-disable */
+import { Component, NgZone, OnDestroy, OnInit, inject } from '@angular/core';
 import { HttpHeaders } from '@angular/common/http';
 import { ActivatedRoute, Data, ParamMap, Router, RouterModule } from '@angular/router';
 import { Observable, Subscription, combineLatest, filter, tap } from 'rxjs';
@@ -15,11 +16,29 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { ITaskNode } from '../task-node.model';
 import { EntityArrayResponseType, TaskNodeService } from '../service/task-node.service';
 import { TaskNodeDeleteDialogComponent } from '../delete/task-node-delete-dialog.component';
+import { ToastService } from 'app/toast/toast.service';
+import { DownloadStatus } from 'app/entities/enumerations/download-status.model';
 
 @Component({
   standalone: true,
   selector: 'jhi-task-node',
   templateUrl: './task-node.component.html',
+  styles: `
+    .table-entities thead th .d-flex > * {
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: auto 0;
+    }
+    .table th,
+    .table td {
+      padding: 0.5rem;
+    }
+    .modal-backdrop {
+      z-index: 0;
+    }
+  `,
   imports: [
     RouterModule,
     FormsModule,
@@ -32,7 +51,7 @@ import { TaskNodeDeleteDialogComponent } from '../delete/task-node-delete-dialog
     ItemCountComponent,
   ],
 })
-export class TaskNodeComponent implements OnInit {
+export class TaskNodeComponent implements OnInit, OnDestroy {
   subscription: Subscription | null = null;
   taskNodes?: ITaskNode[];
   isLoading = false;
@@ -49,9 +68,9 @@ export class TaskNodeComponent implements OnInit {
   protected sortService = inject(SortService);
   protected modalService = inject(NgbModal);
   protected ngZone = inject(NgZone);
-
+  private ToastService = inject(ToastService);
   trackId = (item: ITaskNode): string => this.taskNodeService.getTaskNodeIdentifier(item);
-
+  intervalId: any; // To hold the interval ID
   ngOnInit(): void {
     this.subscription = combineLatest([this.activatedRoute.queryParamMap, this.activatedRoute.data])
       .pipe(
@@ -59,6 +78,14 @@ export class TaskNodeComponent implements OnInit {
         tap(() => this.load()),
       )
       .subscribe();
+
+    this.ToastService.toastSubject.subscribe(() => {
+      this.load();
+    });
+    // Start the interval when the component is initialized
+    this.intervalId = setInterval(() => {
+      this.load();
+    }, 4000); // 3000 milliseconds = 3 seconds
   }
 
   delete(taskNode: ITaskNode): void {
@@ -80,7 +107,10 @@ export class TaskNodeComponent implements OnInit {
       },
     });
   }
-
+  ngOnDestroy(): void {
+    // Clear the interval when the component is destroyed to prevent memory leaks
+    clearInterval(this.intervalId);
+  }
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(this.page, event);
   }
@@ -134,6 +164,20 @@ export class TaskNodeComponent implements OnInit {
         relativeTo: this.activatedRoute,
         queryParams: queryParamsObj,
       });
+    });
+  }
+
+  retryTask(task: ITaskNode): void {
+    // alert("BETA MIGHT NOT WORK");
+    task.status = DownloadStatus.PENDING;
+    task.retryCount = 0;
+    task.maxRetryCount = 5;
+    task.canRetry = true;
+    // @ts-ignore
+    task.scheduledStartTime = '';
+
+    this.taskNodeService.partialUpdate(task).subscribe(() => {
+      this.load();
     });
   }
 }

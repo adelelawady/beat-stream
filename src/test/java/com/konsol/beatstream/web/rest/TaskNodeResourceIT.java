@@ -38,7 +38,6 @@ import org.springframework.test.web.servlet.MockMvc;
 @WithMockUser
 class TaskNodeResourceIT {
 
-    private static final ReferenceType DEFAULT_REFERENCE_TYPE = ReferenceType.UPLOAD;
     private static final ReferenceType UPDATED_REFERENCE_TYPE = ReferenceType.YOUTUBE;
 
     private static final Long DEFAULT_REFERENCE_ID = 1L;
@@ -125,7 +124,6 @@ class TaskNodeResourceIT {
      */
     public static TaskNode createEntity() {
         return new TaskNode()
-            .referenceType(DEFAULT_REFERENCE_TYPE)
             .taskName(DEFAULT_TASK_NAME)
             .taskLog(DEFAULT_TASK_LOG)
             .scheduledStartTime(DEFAULT_SCHEDULED_START_TIME)
@@ -315,7 +313,6 @@ class TaskNodeResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(taskNode.getId())))
-            .andExpect(jsonPath("$.[*].referenceType").value(hasItem(DEFAULT_REFERENCE_TYPE.toString())))
             .andExpect(jsonPath("$.[*].referenceId").value(hasItem(DEFAULT_REFERENCE_ID.intValue())))
             .andExpect(jsonPath("$.[*].taskName").value(hasItem(DEFAULT_TASK_NAME)))
             .andExpect(jsonPath("$.[*].taskLog").value(hasItem(DEFAULT_TASK_LOG)))
@@ -348,7 +345,6 @@ class TaskNodeResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(taskNode.getId()))
-            .andExpect(jsonPath("$.referenceType").value(DEFAULT_REFERENCE_TYPE.toString()))
             .andExpect(jsonPath("$.referenceId").value(DEFAULT_REFERENCE_ID.intValue()))
             .andExpect(jsonPath("$.taskName").value(DEFAULT_TASK_NAME))
             .andExpect(jsonPath("$.taskLog").value(DEFAULT_TASK_LOG))

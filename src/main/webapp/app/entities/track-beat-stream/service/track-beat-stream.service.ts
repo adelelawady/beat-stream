@@ -18,7 +18,7 @@ export class TrackBeatStreamService {
   protected http = inject(HttpClient);
 
   protected resourceUrl = this.applicationConfigService.getEndpointFor('api/tracks');
-
+  protected resourceTrackUrl = this.applicationConfigService.getEndpointFor('api/track');
   protected resourceAPIUrl = this.applicationConfigService.getEndpointFor('api/audio');
 
   create(track: NewTrackBeatStream): Observable<EntityResponseType> {
@@ -33,6 +33,12 @@ export class TrackBeatStreamService {
 
   uploadSongFile(trackUploadData: any): Observable<HttpResponse<object>> {
     return this.http.post(`${this.resourceAPIUrl}/upload`, trackUploadData, {
+      observe: 'response',
+    });
+  }
+
+  updateTrack(trackUpdate: any): Observable<HttpResponse<object>> {
+    return this.http.post(`${this.resourceTrackUrl}/update`, trackUpdate, {
       observe: 'response',
     });
   }

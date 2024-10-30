@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { AudioService } from 'app/shared/service/audio.service';
 
 @Component({
@@ -22,7 +23,7 @@ export class PlyrMainComponent implements OnInit {
     artwork: 'http://localhost:8080/content/images/logo-jhipster.png',
     duration: 0,
   };
-
+  private applicationConfigService = inject(ApplicationConfigService);
   constructor(private audioService: AudioService) {}
 
   // Play/Pause logic
@@ -60,7 +61,7 @@ export class PlyrMainComponent implements OnInit {
     this.audioService.audioSource$.subscribe(track => {
       if (track !== null && track !== 'PlayAny') {
         const audio: HTMLAudioElement = this.audioPlayer.nativeElement;
-        this.currentTrack.url = `http://localhost:8080/api/track/play/${track.id}`;
+        this.currentTrack.url = this.applicationConfigService.getEndpointFor(`api/track/play/${track.id}`);
         this.currentTrack.duration = track.duration;
         this.currentTrack.artist = this.formatDuration(track.duration);
         this.isPlaying = true;

@@ -2,6 +2,7 @@ package com.konsol.beatstream.service.audioPlugins.SoundCloud;
 
 import static com.konsol.beatstream.service.bucket.BucketManager.rootPath;
 
+import com.konsol.beatstream.config.AppSettingsConfiguration;
 import com.konsol.beatstream.domain.ReferanceDownloadTask;
 import com.konsol.beatstream.domain.TaskNode;
 import com.konsol.beatstream.domain.Track;
@@ -24,6 +25,7 @@ import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.jaudiotagger.audio.AudioFile;
@@ -58,14 +60,30 @@ public class SoundCloudDownloader {
 
     String startupPath = Paths.get("").toAbsolutePath().toString();
 
-    // Path to the yt-dlp.exe file
-    private final String YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
-    private final String FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
-
     private TaskNode taskNode = null;
 
     @Autowired
     private TaskNodeRepository taskNodeRepository;
+
+    private String YTDLP_PATH;
+    private String FFMPEG_PATH;
+    private boolean enableDublicated = false;
+
+    public SoundCloudDownloader() {
+        try {
+            YTDLP_PATH = AppSettingsConfiguration.getSettings()
+                .getProperty("beatstream.settings.plugins.yt-dl_path", startupPath + "\\plugins\\yt-dlp.exe");
+            FFMPEG_PATH = AppSettingsConfiguration.getSettings()
+                .getProperty("beatstream.settings.plugins.ffmpeg_path", startupPath + "\\plugins\\ffmpeg.exe");
+            enableDublicated = Boolean.parseBoolean(
+                AppSettingsConfiguration.getSettings().getProperty("beatstream.settings.soundcloud.duplicated.enabled", "false")
+            );
+        } catch (Exception e) {
+            enableDublicated = false;
+            YTDLP_PATH = startupPath + "\\plugins\\yt-dlp.exe";
+            FFMPEG_PATH = startupPath + "\\plugins\\ffmpeg.exe";
+        }
+    }
 
     // Method to download a song from SoundCloud using yt-dlp.exe
     public void downloadSong(String soundCloudUrl, Track track, TaskNode _taskNode) throws IOException {
@@ -198,12 +216,24 @@ public class SoundCloudDownloader {
         String soundUniqCloudId = soundmedtaData[0] + "-" + soundmedtaData[1];
 
         // User user = userService.getCurrentUser();
-        /*  if (trackRepository.findByRefIdAndRefTypeAndOwnerIdAndPlaylistsIn(soundUniqCloudId, "SOUNDCLOUD", taskNode.getOwnerId(), List.of(playList)).isPresent()) {
+        if (
+            !enableDublicated &&
+            trackRepository
+                .findByRefIdAndRefTypeAndOwnerIdAndPlaylistsIn(soundUniqCloudId, "SOUNDCLOUD", taskNode.getOwnerId(), List.of(playList))
+                .isPresent()
+        ) {
             taskService.sendClientMessage("SoundCloud music already exists: " + soundCloudId);
             throw new RuntimeException("SoundCloud music already exists: " + soundCloudId);
-        } */
+        }
 
-        Track track = trackService.createTrack(soundUniqCloudId, "SOUNDCLOUD", playList, taskNode.getOwnerId());
+        Track track;
+        if (taskNode.getTrackId() == null || taskNode.getTrackId().isEmpty()) {
+            track = trackService.createTrack(soundUniqCloudId, "SOUNDCLOUD", playList, taskNode.getOwnerId());
+        } else {
+            Optional<Track> trackOptional = trackRepository.findById(taskNode.getTrackId());
+            track = trackOptional.orElseGet(() -> trackService.createTrack(soundUniqCloudId, "SOUNDCLOUD", playList, taskNode.getOwnerId())
+            );
+        }
 
         try {
             if (taskNode != null) {

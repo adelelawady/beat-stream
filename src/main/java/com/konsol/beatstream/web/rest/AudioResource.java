@@ -1,5 +1,9 @@
 package com.konsol.beatstream.web.rest;
 
+import static com.konsol.beatstream.service.audioPlugins.Spotify.SpotifyDownloader.getSpotifyLinkType;
+import static com.konsol.beatstream.service.audioPlugins.Spotify.SpotifyDownloader.isSpotifyLink;
+
+import com.konsol.beatstream.config.AppSettingsConfiguration;
 import com.konsol.beatstream.domain.Playlist;
 import com.konsol.beatstream.domain.TaskNode;
 import com.konsol.beatstream.domain.User;
@@ -14,6 +18,7 @@ import com.konsol.beatstream.service.audioPlugins.youtube.YoutubeDownloader;
 import com.konsol.beatstream.service.impl.TaskNodeServiceImpl;
 import com.konsol.beatstream.web.api.AudioApi;
 import com.konsol.beatstream.web.api.AudioApiDelegate;
+import com.konsol.beatstream.web.websocket.TaskService;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.concurrent.CompletableFuture;
@@ -35,19 +40,24 @@ public class AudioResource implements AudioApiDelegate {
     TrackService trackService;
 
     @Autowired
-    YoutubeDownloader youtubeDownloader;
-
-    @Autowired
-    SoundCloudDownloader soundCloudDownloader;
-
-    @Autowired
     private TaskNodeServiceImpl taskNodeService;
 
     @Autowired
     private UserService userService;
 
-    public AudioResource(SimpMessageSendingOperations messagingTemplate) {
-        // this.messagingTemplate = messagingTemplate;
+    boolean canDownloadPlaylists = true;
+
+    @Autowired
+    private TaskService taskService;
+
+    public AudioResource() {
+        try {
+            canDownloadPlaylists = Boolean.parseBoolean(
+                AppSettingsConfiguration.getSettings().getProperty("beatstream.settings.download.playlist.enabled", "true")
+            );
+        } catch (Exception e) {
+            canDownloadPlaylists = true;
+        }
     }
 
     @Override
@@ -69,7 +79,8 @@ public class AudioResource implements AudioApiDelegate {
     @Override
     public ResponseEntity<Status> downloadAudio(String refid, String refType, String playlistId) {
         Status status = new Status();
-        status.setStatus("Video Added To Downloading List And Will be downloaded soon");
+        status.setStatus("Track was added to tasks and download will start soon Enjoy");
+
         User user = userService.getCurrentUser();
         if (!refType.isBlank() && refType.equalsIgnoreCase("youtube")) {
             try {
@@ -83,7 +94,7 @@ public class AudioResource implements AudioApiDelegate {
                     0,
                     user.getId()
                 );
-
+                taskService.sendClientMessage("Track was added to tasks and download will start soon  Enjoy");
                 return ResponseEntity.ok(status);
             } catch (Exception e) {
                 status.setStatus(e.getMessage());
@@ -92,6 +103,11 @@ public class AudioResource implements AudioApiDelegate {
         }
 
         if (!refType.isBlank() && refType.equalsIgnoreCase("soundcloudList")) {
+            if (!canDownloadPlaylists) {
+                status.setStatus("Playlist Download is disabled change it from settings in settings file");
+                taskService.sendClientMessage("Playlist Download is disabled change it from settings in settings file");
+                return ResponseEntity.ok(status);
+            }
             try {
                 TaskNode taskNode = taskNodeService.createTask(
                     refid,
@@ -103,6 +119,7 @@ public class AudioResource implements AudioApiDelegate {
                     0,
                     user.getId()
                 );
+                taskService.sendClientMessage("Track was added to tasks and download will start soon  Enjoy");
                 return ResponseEntity.ok(status);
             } catch (Exception e) {
                 status.setStatus(e.getMessage());
@@ -111,6 +128,11 @@ public class AudioResource implements AudioApiDelegate {
         }
 
         if (!refType.isBlank() && refType.equalsIgnoreCase("youtubelist")) {
+            if (!canDownloadPlaylists) {
+                status.setStatus("Playlist Download is disabled change it from settings in settings file");
+                taskService.sendClientMessage("Playlist Download is disabled change it from settings in settings file");
+                return ResponseEntity.ok(status);
+            }
             try {
                 TaskNode taskNode = taskNodeService.createTask(
                     refid,
@@ -122,6 +144,7 @@ public class AudioResource implements AudioApiDelegate {
                     0,
                     user.getId()
                 );
+                taskService.sendClientMessage("Track was added to tasks and download will start soon  Enjoy");
                 return ResponseEntity.ok(status);
             } catch (Exception e) {
                 status.setStatus(e.getMessage());
@@ -131,9 +154,48 @@ public class AudioResource implements AudioApiDelegate {
 
         if (!refType.isBlank() && refType.equalsIgnoreCase("spotify")) {
             try {
-                status.setStatus("SPOTIFY NOT IMPELEMENTED YET");
-                // TaskNode taskNode= taskNodeService.createTask(refid, ReferenceType.SPOTIFY,refid,playlistId,
-                //     null, DownloadType.AUDIO,0,user.getId());
+                //https://open.spotify.com/track/7z7kvUQGwlC6iOl7vMuAr9?si=2effec7337294894
+                switch (getSpotifyLinkType(refid)) {
+                    case "Track": {
+                        taskService.sendClientMessage("GETTING SPOTIFY TRACK ...");
+                        TaskNode taskNode = taskNodeService.createTask(
+                            refid,
+                            ReferenceType.SPOTIFY,
+                            refid,
+                            playlistId,
+                            null,
+                            DownloadType.AUDIO,
+                            0,
+                            user.getId()
+                        );
+                        break;
+                    }
+                    case "Playlist": {
+                        if (!canDownloadPlaylists) {
+                            status.setStatus("Playlist Download is disabled change it from settings in settings file");
+                            taskService.sendClientMessage("Playlist Download is disabled change it from settings in settings file");
+                            return ResponseEntity.ok(status);
+                        }
+                        taskService.sendClientMessage("GETTING SPOTIFY PLAYLIST TRACKS ...");
+                        TaskNode taskNode = taskNodeService.createTask(
+                            refid,
+                            ReferenceType.SPOTIFY,
+                            refid,
+                            playlistId,
+                            null,
+                            DownloadType.AUDIO_PLAYLIST,
+                            0,
+                            user.getId()
+                        );
+                        break;
+                    }
+                    default: {
+                        taskService.sendClientMessage("SPOTIFY LINK NOT FOUND");
+                        status.setStatus("SPOTIFY LINK NOT FOUND");
+                        return ResponseEntity.ok(status);
+                    }
+                }
+
                 return ResponseEntity.ok(status);
             } catch (Exception e) {
                 status.setStatus(e.getMessage());
@@ -152,7 +214,7 @@ public class AudioResource implements AudioApiDelegate {
                 0,
                 user.getId()
             );
-
+            taskService.sendClientMessage("Track was added to tasks and download will start soon  Enjoy");
             return ResponseEntity.ok(status);
         }
         status.setStatus("Failed To Download Audio File From ");

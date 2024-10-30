@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Objects;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * A DTO for the {@link com.konsol.beatstream.domain.TaskNode} entity.
@@ -21,14 +22,16 @@ public class TaskNodeDTO implements Serializable {
     private ReferenceType referenceType;
 
     @NotNull
-    private Long referenceId;
+    private String referenceId;
 
     @NotNull
     private String taskName;
 
     private String taskLog;
 
-    private Long trackId;
+    private String trackId;
+
+    private boolean canRetry = true;
 
     private Instant scheduledStartTime;
 
@@ -80,11 +83,11 @@ public class TaskNodeDTO implements Serializable {
         this.referenceType = referenceType;
     }
 
-    public Long getReferenceId() {
+    public String getReferenceId() {
         return referenceId;
     }
 
-    public void setReferenceId(Long referenceId) {
+    public void setReferenceId(String referenceId) {
         this.referenceId = referenceId;
     }
 
@@ -104,11 +107,11 @@ public class TaskNodeDTO implements Serializable {
         this.taskLog = taskLog;
     }
 
-    public Long getTrackId() {
+    public String getTrackId() {
         return trackId;
     }
 
-    public void setTrackId(Long trackId) {
+    public void setTrackId(String trackId) {
         this.trackId = trackId;
     }
 
@@ -288,5 +291,13 @@ public class TaskNodeDTO implements Serializable {
             ", maxRetryCount=" + getMaxRetryCount() +
             ", parentTask=" + getParentTask() +
             "}";
+    }
+
+    public boolean isCanRetry() {
+        return canRetry;
+    }
+
+    public void setCanRetry(boolean canRetry) {
+        this.canRetry = canRetry;
     }
 }

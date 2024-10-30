@@ -46,3 +46,47 @@ Logo styles
   background: url('/content/images/logo-jhipster.png') no-repeat center center;
   background-size: contain;
 }
+
+.modal-content .card {
+  width: 350px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.modal-content .card h2 {
+  margin: 0;
+  color: #333;
+}
+.modal-content .card p {
+  font-size: 14px;
+  color: #666;
+  margin: 10px 0;
+}
+.modal-content .card .icon {
+  font-size: 24px;
+  margin: 10px;
+  color: #007bff;
+}
+.modal-content .card a {
+  text-decoration: none;
+  color: #007bff;
+}
+.modal-content .card .social-links a {
+  margin: 0 10px;
+}
+.modal-content .card .music-app {
+  margin-top: 20px;
+  text-align: left;
+}
+.modal-content .card .music-app h3 {
+  color: #007bff;
+  margin: 0;
+  font-size: 16px;
+}
+.modal-content .card .music-app p {
+  color: #555;
+  margin: 10px 0;
+  font-size: 14px;
+}
