@@ -15,7 +15,7 @@ BeatStream is a powerful music streaming and management application built using 
 
 
 [DOWNLOAD RELEASE 2 BETA ](https://github.com/adelelawady/beat-stream/releases/download/2.0.0.0/BeatStream.2.0.Beta.exe)
-
+[![Downloads](https://img.shields.io/github/downloads/adelelawady/beat-stream/total.svg)](https://github.com/adelelawady/beat-stream/releases/)
 
 <div align="center">
   
